@@ -9,14 +9,16 @@
 #ifndef _SHA_H_
 #define _SHA_H_
 
+#include <stdint.h>
+
 /* Define APG_LITTLE_ENDIAN if the machine is little-endian */
 
 #define APG_LITTLE_ENDIAN
 
 /* Useful defines/typedefs */
 
-typedef unsigned char   BYTE ;
-typedef unsigned long   LONG ;
+typedef uint8_t    BYTE ;
+typedef uint32_t   LONG ;
 
 /* The SHA block size and message digest sizes, in bytes */
 
