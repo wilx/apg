@@ -11,9 +11,9 @@ AM_MAINTAINER_MODE([enable])
 
 # Checks for programs.
 AC_PROG_AWK
-AC_PROG_CC
 AC_PROG_INSTALL
 
+AC_PROG_CC_C99
 AX_COMPILER_VENDOR
 
 AS_CASE([$ax_cv_c_compiler_vendor],
