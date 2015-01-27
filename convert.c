@@ -31,7 +31,8 @@
 #include <string.h>
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
 #include <strings.h>
-#endif
+#endif /* WIN32 */
+
 #ifndef APGBFM
 # include "errs.h"
 # include "randpass.h"

@@ -35,7 +35,7 @@
 #include "getopt.h"
 
 
-#define VERSION    "2.2.3"
+#define VERSION    "2.3.0b"
 
 
 #define FOUND "FOUND"

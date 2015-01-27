@@ -184,6 +184,38 @@ paranoid_bloom_check_pass (char * password, char *filter, USHORT s_len)
  return(0);
 }
 
+
+#if defined(APG_USE_CRACKLIB)
+/*
+** cracklib_check_pass() - check password against cracklib.
+** INPUT:
+**   char * - password to check.
+**   char * - cracklib dict.
+** OUTPUT:
+**   int
+**    -1 - error 
+**     1 - password does not pass this check
+**     0 - password does pass this check
+** NOTES:
+**   none.
+*/
+int
+cracklib_check_pass(char *pw, char *dictpath)
+{
+ char * msg;
+ msg = FascistCheck(pw,dictpath);
+ if (msg == NULL) return (0);
+ else
+  {
+#ifdef APG_DEBUG
+   fprintf(stdout,"cracklib_check_pass: password --> %s rejected (%s)\n", pw, msg);
+   fflush(stdout);
+#endif
+   return (1);
+  }
+}
+#endif
+
 /*
 ** filter_check_pass() - routine that checks password against filter string
 **

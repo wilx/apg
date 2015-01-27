@@ -39,9 +39,9 @@
 #include <time.h>
 
 #ifndef APG_USE_SHA
-#define APG_VERSION "2.2.3 (PRNG: X9.17/CAST)"
+#define APG_VERSION "2.3.0b (PRNG: X9.17/CAST)"
 #else /* APG_USE_SHA */
-#define APG_VERSION "2.2.3 (PRNG: X9.17/SHA-1)"
+#define APG_VERSION "2.3.0b (PRNG: X9.17/SHA-1)"
 #endif /* APG_USE_SHA */
 
 #ifdef __NetBSD__
@@ -86,6 +86,24 @@
 #include "errs.h"
 #include "getopt.h"
 #include "convert.h"
+
+#if !defined(CLISERV)
+#if !defined(APG_USE_CRYPT) && !defined(APG_USE_CRACKLIB)
+#define APG_PROGRAMM_OPTIONS "M:E:a:r:b:p:sdc:n:m:x:htvlq"
+#elif defined(APG_USE_CRYPT) && !defined(APG_USE_CRACKLIB)
+#define APG_PROGRAMM_OPTIONS "M:E:a:r:b:p:sdc:n:m:x:htvylq"
+#elif !defined(APG_USE_CRYPT) && defined(APG_USE_CRACKLIB)
+#define APG_PROGRAMM_OPTIONS "M:E:a:r:b:p:sdc:n:m:x:htvklq"
+#elif defined(APG_USE_CRYPT) && defined(APG_USE_CRACKLIB)
+#define APG_PROGRAMM_OPTIONS "M:E:a:r:b:p:sdc:n:m:x:htvyklq"
+#endif /* CRYPT,CRACKLIB */
+#else /* CLISERV */
+#if defined(APG_USE_CRACKLIB)
+#define APG_PROGRAMM_OPTIONS "M:E:a:r:b:p:n:m:x:vkt"
+#else /* CRACKLIB */
+#define APG_PROGRAMM_OPTIONS "M:E:a:r:b:p:n:m:x:vt"
+#endif /* CRACKLIB */
+#endif /* CLUSERV */
 
  struct pass_m {
         unsigned int pass;	         /* password generation mode        */
@@ -139,6 +157,9 @@ main (int argc, char *argv[])
  UINT32 user_defined_seed = 0L;          /* user defined random seed        */
  int user_defined_seed_present = FALSE;  /* user defined random seed flag   */
  char *str_mode;                         /* string mode pointer             */
+#ifdef APG_USE_CRACKLIB
+ unsigned int cracklib_restrict_present = FALSE;
+#endif /* APG_USE_CRACKLIB*/
 #ifndef CLISERV
  char *com_line_seq;
  char *spell_pass_string;
@@ -148,6 +169,7 @@ main (int argc, char *argv[])
  char *crypt_string;
  unsigned int show_crypt_text = FALSE;   /* display crypt(3)'d text flag    */
 #endif /* APG_USE_CRYPT */
+
 #endif /* CLISERV */
 #ifdef CLISERV
 #if defined(sgi) || defined(__APPLE__) || defined(__QNX__) /* Thanks to Andrew J. Caird */
@@ -175,18 +197,14 @@ main (int argc, char *argv[])
  syslog (LOG_INFO, "password generation request from %s.%d\n", peer_ip, htons(cliaddr->sin_port));
 #endif /* CLISERV */
 
+#if defined(APG_DEBUG)
+ fprintf (stdout,"APG_PROGRAMM_OPTIONS--> %s\n\n", APG_PROGRAMM_OPTIONS);
+ fflush (stdout);
+#endif
  /*
  ** Analize options
  */
-#ifndef CLISERV
-#ifdef APG_USE_CRYPT
- while ((option = apg_getopt (argc, argv, "M:E:a:r:b:p:sdc:n:m:x:htvylq")) != -1)
-#else /* APG_USE_CRYPT */
- while ((option = apg_getopt (argc, argv, "M:E:a:r:b:p:sdc:n:m:x:htvlq")) != -1)
-#endif /* APG_USE_CRYPT */
-#else /* CLISERV */
- while ((option = apg_getopt (argc, argv, "M:E:a:r:b:p:n:m:x:vt")) != -1)
-#endif /* CLISERV */
+ while ((option = apg_getopt (argc, argv, APG_PROGRAMM_OPTIONS)) != -1)
   {
    switch (option)
     {
@@ -225,6 +243,14 @@ main (int argc, char *argv[])
       min_substr_len = atoi (apg_optarg);
       paranoid_bloom_restrict_present = TRUE;
       break;
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#if defined(APG_USE_CRACKLIB)
+     case 'k': /* cracklib password check */
+      restrictions_present = TRUE;
+      cracklib_restrict_present = TRUE;
+      break;
+#endif /* CRACKLIB */
+#endif /* WIN32 */
 #ifndef CLISERV
      case 'l':
       spell_present = TRUE;
@@ -353,10 +379,18 @@ main (int argc, char *argv[])
 	      restrict_res = paranoid_bloom_check_pass(pass_string, restrictions_file, min_substr_len);
 	   }
 	 }
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#if defined(APG_USE_CRACKLIB)
+        /* Cracklib check */
+	if (restrict_res == 0)
+	 if(cracklib_restrict_present == TRUE)
+	  restrict_res = cracklib_check_pass (pass_string, CRACKLIB_DICTPATH);
+#endif /* APG_USE_CRACKLIB */
+#endif /* WIN32 */
 	 /* Dictionary check */
-	 if (restrict_res == 0)
-	  if (plain_restrictions_present == TRUE)
-            restrict_res = check_pass(pass_string, plain_restrictions_file);
+	if (restrict_res == 0)
+	 if (plain_restrictions_present == TRUE)
+          restrict_res = check_pass(pass_string, plain_restrictions_file);
 
 
         switch (restrict_res)
@@ -464,10 +498,18 @@ main (int argc, char *argv[])
 	      restrict_res = paranoid_bloom_check_pass(pass_string, restrictions_file, min_substr_len);
 	   }
 	 }
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#if defined(APG_USE_CRACKLIB)
+        /* Cracklib check */
+	if (restrict_res == 0)
+	 if(cracklib_restrict_present == TRUE)
+	  restrict_res = cracklib_check_pass (pass_string, CRACKLIB_DICTPATH);
+#endif /* APG_USE_CRACKLIB */
+#endif /* WIN32 */
 	 /* Dictionary check */
-	 if (restrict_res == 0)
-	  if (plain_restrictions_present == TRUE)
-            restrict_res = check_pass(pass_string, plain_restrictions_file);
+	if (restrict_res == 0)
+	 if (plain_restrictions_present == TRUE)
+          restrict_res = check_pass(pass_string, plain_restrictions_file);
 
 
         switch (restrict_res)
@@ -627,6 +669,11 @@ print_help (void)
  printf ("-b filter_file  apply bloom filter check against filter_file\n");
  printf ("                (filter_file should be created with apgbfm(1) utility)\n");
  printf ("-p substr_len   paranoid modifier for bloom filter check\n");
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#ifdef APG_USE_CRACKLIB
+ printf ("-k              apply cracklib ckeck\n");
+#endif /* APG_USE_CRYPT */
+#endif /* WIN32 */
  printf ("-a algorithm    choose algorithm\n");
  printf ("                 1 - random password generation according to\n");
  printf ("                     password modes\n");

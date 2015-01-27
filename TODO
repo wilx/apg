@@ -5,9 +5,6 @@ Priority Hi:
 
 * Fix some code style or other errors if any.
 
-* Make some kind of configuration file to avoid command
-  line parameter typing.
-
 Priority Medium:
 
 * Include support for some other random number generation

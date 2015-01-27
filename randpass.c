@@ -36,7 +36,7 @@
 #include <time.h>
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
 #include <pwd.h>
-#endif
+#endif /* WIN32 */
 #include <unistd.h>
 #include "randpass.h"
 

@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
 #include <strings.h>
-#endif
+#endif /* WIN32 */
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -130,7 +130,11 @@ u8 ro_key[16] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
 UINT32
 x917sha1_rnd (void)
 {
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
  struct timeval local_time;
+#else
+ clock_t local_time[2]; /* clock ticks for win32 */
+#endif
  UINT32 I[2] = {0L,0L};
  UINT32 I_plus_s[2] = {0L,0L};
  UINT32 Xi[2] = {0L,0L};
@@ -139,7 +143,12 @@ x917sha1_rnd (void)
  BYTE hash [SHA_DIGESTSIZE];
  apg_SHA_INFO shaInfo;
 
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
  (void) gettimeofday (&local_time, 0);
+#else
+ local_time[0] = clock();
+ local_time[1] = clock();
+#endif
  apg_shaInit ( &shaInfo );
  apg_shaUpdate ( &shaInfo, (BYTE *)&local_time, 8);
  apg_shaFinal ( &shaInfo, hash );

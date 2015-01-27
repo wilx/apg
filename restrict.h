@@ -33,13 +33,21 @@
 #ifndef APG_RESTRICT_H
 #define APG_RESTRICT_H	1
 
+#if defined(APG_USE_CRACKLIB)
+#include <packer.h>
+#endif
+
 #include "bloom.h"
 #include "randpass.h"
+
 #define MAX_DICT_STRING_SIZE	255
 int check_pass(char * pass, char *dict);
 int bloom_check_pass (char *word, char *filter);
 int paranoid_bloom_check_pass (char * password, char *filter, USHORT s_len);
 int filter_check_pass(const char * word, unsigned int cond);
 int set_exclude_list(const char * char_string);
+#if defined(APG_USE_CRACKLIB)
+int cracklib_check_pass(char *pw, char *dictpath);
+#endif
 
 #endif /* APG_RESTRICT_H */

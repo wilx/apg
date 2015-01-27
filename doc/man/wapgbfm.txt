@@ -1,25 +1,25 @@
-WAPGBFM                           User Manual                          WAPGBFM
+APGBFM(1)                         User Manual                        APGBFM(1)
 
 
 
 NAME
-       WAPGBFM - APG Bloom filter management program
+       apgbfm - APG Bloom filter management program
 
 
 SYNOPSIS
-       WAPGBFM -f filter -n numofwords [-q] [-s]
-       WAPGBFM -f filter -d dictfile [-q] [-s]
-       WAPGBFM -f filter -a word [-q]
-       WAPGBFM -f filter -A dictfile [-q]
-       WAPGBFM -f filter -c word [-q]
-       WAPGBFM -f filter -C dictfile [-q]
-       WAPGBFM -i filter
-       WAPGBFM [-v] [-h]
+       apgbfm -f filter -n numofwords [-q] [-s]
+       apgbfm -f filter -d dictfile [-q] [-s]
+       apgbfm -f filter -a word [-q]
+       apgbfm -f filter -A dictfile [-q]
+       apgbfm -f filter -c word [-q]
+       apgbfm -f filter -C dictfile [-q]
+       apgbfm -i filter
+       apgbfm [-v] [-h]
 
 
 DESCRIPTION
-       WAPGBFM is used to manage Bloom filter that is used to restrict password
-       generation in WAPG pasword generation software. Usage of the Bloom  fil-
+       apgbfm is used to manage Bloom filter that is used to restrict password
+       generation in APG pasword generation software. Usage of the Bloom  fil-
        ter  allows  to  speed up password check for large dictionaries and has
        some other benefits.
 
@@ -32,13 +32,13 @@ DESCRIPTION
        It has very nice description of Bloom filter and  it's  advantages  for
        password checking systems.
 
-       In simple words, WAPGBFM generates n hash values for every word and sets
-       corresponding bits in filter file to 1. To check the word WAPGBFM gener-
+       In simple words, apgbfm generates n hash values for every word and sets
+       corresponding bits in filter file to 1. To check the word apgbfm gener-
        ates  the  same hash functions for that word and if all n corresponding
        bits in filter file are set to 1 then it suppose that  word  exists  in
-       dicionary.  WAPGBFM uses SHA-1 as a hash function.
+       dicionary.  apgbfm uses SHA-1 as a hash function.
 
-       WAPGBFM can be used as standalone utility, not only with apg, or apgd.
+       apgbfm can be used as standalone utility, not only with apg, or apgd.
 
 
        WARNING !!!
@@ -46,7 +46,7 @@ DESCRIPTION
               make file formats compatible but i can not guaranty this.
 
        WARNING !!!
-              WAPGBFM may slow down your computer during filter creation.
+              apgbfm may slow down your computer during filter creation.
 
 OPTIONS
        -f filter
@@ -68,7 +68,7 @@ OPTIONS
               password crackers.  This check is case sensitive.  For  example,
               if you want to reject word 'root', you should insert in dictfile
               words: root, Root, RoOt, ... , ROOT.  To indicate  that  program
-              is  working  WAPGBFM prints dot for every 100 words added in dic-
+              is  working  apgbfm prints dot for every 100 words added in dic-
               tionary.
 
        -a word
@@ -76,7 +76,7 @@ OPTIONS
 
        -A dictfile
               add all words from dictfile to the filter. To indicate that pro-
-              gram  is  working WAPGBFM prints dot for every 100 words added in
+              gram  is  working apgbfm prints dot for every 100 words added in
               dictionary.
 
        -c word
@@ -94,7 +94,7 @@ OPTIONS
        -h     print help information.
 
 EXIT CODE
-       On successful completion of its task, WAPGBFM will  complete  with  exit
+       On successful completion of its task, apgbfm will  complete  with  exit
        code  0.   An  exit  code  of  -1 indicates an error occurred.  Textual
        errors are written to the standard error stream.
 
@@ -104,8 +104,10 @@ FILES
 BUGS
        None.  If you've found one, please send bug description to the  author.
 
+       This man page is Alpha too.
+
 SEE ALSO
-       WAPG.TXT
+       apgd(8), apg(1)
 
 AUTHOR
        Adel I. Mirzazhanov, <a-del@iname.com>
@@ -113,4 +115,4 @@ AUTHOR
 
 
 
-Automated Password Generator      2003 Jun 19                          WAPGBFM
+Automated Password Generator      2003 Jun 19                        APGBFM(1)

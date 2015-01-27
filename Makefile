@@ -1,4 +1,63 @@
 ##################################################################
+# Directories
+# Install dirs
+INSTALL_PREFIX = /usr/local
+
+# Full default path is /usr/local/bin
+APG_BIN_DIR = /bin
+
+# Full default path is /usr/local/man/man1
+APG_MAN_DIR = /man/man1
+
+# Full default path is /usr/local/sbin
+APGD_BIN_DIR = /sbin
+
+# Full default path is /usr/local/man/man8
+APGD_MAN_DIR = /man/man8
+
+# You should not edit 2 lines below
+APGBFM_CLIBS = -lm
+APG_CLIBS = -lm
+
+##################################################################
+# Support for crypted passwords
+# If you do not want to use crypted passwords output then you must
+# comment the folowing 2 line.
+#
+# NOTE#1: You should comment the line 'APG_CLIBS += -lcrypt' for QNX
+#         RTP 6.1.0, OpenBSD 2.8 and for WIN32.
+#
+# NOTE#2: If ld (linker) could not find `crypt' library try to
+#         replace line
+#           'APG_CLIBS += -lcrypt'
+#         with line
+#           'APG_CLIBS += -lcrypto'
+#         This works on MacOS X
+#
+STANDALONE_OPTIONS += -DAPG_USE_CRYPT
+APG_CLIBS += -lcrypt
+
+##################################################################
+# Support for cracklib
+# NOTE: Cracklib can be found at
+#       http://www.crypticide.org/users/alecm/
+# If you want to use cracklib for password quality check then you
+# must uncomment the folowing 4 lines (you must not do this for WIN32)
+#
+#CRACKLIB_DICTPATH = "/usr/local/lib/pw_dict"
+#STANDALONE_OPTIONS += -DAPG_USE_CRACKLIB '-DCRACKLIB_DICTPATH=${CRACKLIB_DICTPATH}' -I/usr/local/include -L/usr/local/lib
+#CLISERV_OPTIONS += -DAPG_USE_CRACKLIB '-DCRACKLIB_DICTPATH=${CRACKLIB_DICTPATH}' -I/usr/local/include -L/usr/local/lib
+#APG_CLIBS += -lcrack
+
+##################################################################
+# Support for ANSI X9.17/SHA1 PRNG
+# If you want to use SHA1 for random number genetation then you
+# must uncomment the folowing 2 lines
+#
+#STANDALONE_OPTIONS += -DAPG_USE_SHA
+#CLISERV_OPTIONS += -DAPG_USE_SHA
+
+##################################################################
 # You can modify CC variable if you have compiler other than GCC
 # But the code was designed and tested with GCC
 CC = gcc
@@ -6,44 +65,7 @@ CC = gcc
 ##################################################################
 # Compilation flags
 # You should comment the line below for AIX+native cc
-FLAGS = -Wall
-
-##################################################################
-# Libraries
-#
-# You should comment the line below ('LIBS= -lcrypt')for QNX RTP
-# 6.1.0, OpenBSD 2.8 and above, WIN32 (+MinGW)
-LIBS = -lcrypt
-LIBM = -lm
-# Use lines below for cygwin
-# LIBS = 
-# LIBM =
-
-##################################################################
-# Support for crypted passwords
-#
-# DO NOT EDIT THE LINE BELOW !!!
-CRYPTED_PASS = APG_DONOTUSE_CRYPT
-# Coment this if you do not want to use crypted passwords output
-# or trying to build programm for win32
-CRYPTED_PASS = APG_USE_CRYPT
-
-##################################################################
-# Support for ANSI X9.17/SHA1 PRNG
-#
-# DO NOT EDIT THE LINE BELOW !!!
-USE_SHA = APG_USE_SHA
-# Coment this if you want to use PRNG X9.17 with SHA-1
-USE_SHA = APG_DONOTUSE_SHA
-
-##################################################################
-# Directories
-# Install dirs
-INSTALL_PREFIX = /usr/local
-APG_BIN_DIR = /bin
-APG_MAN_DIR = /man/man1
-APGD_BIN_DIR = /sbin
-APGD_MAN_DIR = /man/man8
+CFLAGS = -Wall
 
 ####################################################################
 # If you plan to install APG daemon you should look at lines below #
@@ -59,21 +81,32 @@ APGD_MAN_DIR = /man/man8
 # Linux
 #
 # Uncoment line below for LINUX
-#CS_LIBS = -lnsl
+#APG_CS_CLIBS += -lnsl
 
 ####################################################################
 # Solaris
 #
 # Uncoment line below for Solaris
-#CS_LIBS = -lnsl -lsocket
+#APG_CS_CLIBS += -lnsl -lsocket
 
 ####################################################################
 # QNX RTP 6.1.0
 #
 # Uncoment line below for QNX RTP 6.1.0
-#CS_LIBS = -lsocket
+#APG_CS_CLIBS += -lsocket
 
-# ====== YOU DO NOT NEED TO MODIFY ANYTHING BELOW THIS LINE ======
+####################################################################
+####################################################################
+# THE FOLOWING IS USED BY DEVELOPER AND YOU PROBABLY DO NOT NEED TO
+# MODIFY THIS LINE
+# STANDALONE_OPTIONS += -DAPG_DEBUG
+
+####################################################################
+# ======= YOU DO NOT NEED TO MODIFY ANYTHING BELOW THIS LINE =======
+####################################################################
+
+APG_CS_CLIBS += ${APG_CLIBS}
+
 # Find group ID for user root
 FIND_GROUP = `grep '^root:' /etc/passwd | awk -F: '{ print $$4 }'`
 
@@ -89,20 +122,20 @@ OBJECTS = rnd.o ./cast/cast.o pronpass.o randpass.o restrict.o apg.o errors.o
 
 standalone: apg apgbfm
 
-all: cliserv standalone
+all: standalone cliserv
 
 cliserv: apgd apgbfm 
 
 cygwin: standalone
 
 apg:
-	${CC} ${FLAGS} -D${CRYPTED_PASS} -D${USE_SHA} -o ${PROGNAME} ${SOURCES} ${LIBS} ${LIBM}
+	${CC} ${CFLAGS} ${STANDALONE_OPTIONS} -o ${PROGNAME} ${SOURCES} ${APG_CLIBS}
 
 apgd:
-	${CC} ${FLAGS} -DCLISERV -D${USE_SHA} -o ${CS_PROGNAME} ${SOURCES} ${CS_LIBS} ${LIBM}
+	${CC} ${CFLAGS} -DCLISERV ${CLISERV_OPTIONS} -o ${CS_PROGNAME} ${SOURCES} ${APG_CS_CLIBS}
 
 apgbfm:
-	${CC} ${FLAGS} -DAPGBFM -o ${BFM_PROGNAME} ${BFM_SOURCES} ${LIBM}
+	${CC} ${FLAGS} -DAPGBFM -o ${BFM_PROGNAME} ${BFM_SOURCES} ${APGBFM_CLIBS}
 
 strip:
 	strip ${PROGNAME}

@@ -1,58 +1,74 @@
-WAPG(1)                           User Manual                          WAPG(1)
+WAPG                              User Manual                             WAPG
 
 
 
 NAME
-       WAPG - generates several random passwords
+       apg - generates several random passwords
 
 
 SYNOPSIS
-       WAPG  [-a  algorithm]  [-M  mode]  [-E char_string] [-n num_of_pass] [-m
+       apg  [-a  algorithm]  [-M  mode]  [-E char_string] [-n num_of_pass] [-m
        min_pass_len] [-x max_pass_len]  [-r  dictfile]  [-b  filter_file]  [-p
-       min_substr_len] [-c cl_seed] [-d] [-l] [-t] [-q] [-h] [-v]
+       min_substr_len] [-c  cl_seed] [-d] [-l] [-t] [-q] [-h] [-v]
 
 
 DESCRIPTION
-       WAPG generates several random passwords. It uses several password gener-
-       ation algorithms (currently two) and a built-in  pseudo  random  number
+       apg generates several random passwords. It uses several password gener-
+       ation  algorithms  (currently  two) and a built-in pseudo random number
        generator.
 
-       Default   algorithm  is  pronounceable  password  generation  algorithm
-       designed by Morrie Gasser and described in A Random Word Generator  For
-       Pronounceable  Passwords  National Technical Information Service (NTIS)
-       AD-A-017676.  The original paper is very old and  had  never  been  put
+       Default  algorithm  is  pronounceable  password  generation   algorithm
+       designed  by Morrie Gasser and described in A Random Word Generator For
+       Pronounceable Passwords National Technical Information  Service  (NTIS)
+       AD-A-017676.   The  original  paper  is very old and had never been put
        online, so I have to use NIST implementation described in FIPS-181.
 
-       Another  algorithm is simple random character generation algorithm, but
-       it uses four user-defined symbol sets to produce  random  password.  It
-       means  that user can choose type of symbols that should appear in pass-
-       word. Symbol sets are: numeric symbol set (0,...,9) ,  capital  letters
-       symbol  set  (A,...,Z) , small letters symbol set (a,...,z) and special
+       Another algorithm is simple random character generation algorithm,  but
+       it  uses  four  user-defined symbol sets to produce random password. It
+       means that user can choose type of symbols that should appear in  pass-
+       word.  Symbol  sets are: numeric symbol set (0,...,9) , capital letters
+       symbol set (A,...,Z) , small letters symbol set (a,...,z)  and  special
        symbols symbol set (#,@,!,...).
 
-       Built-in pseudo random number generator is an implementation  of  algo-
-       rithm  described  in Appendix C of ANSI X9.17 or RFC1750 with exception
-       that it uses CAST or SHA-1 instead of Triple DES.  It uses  local  time
-       with  precision  of  microseconds (see gettimeofday(2)) and /dev/random
+       Built-in  pseudo  random number generator is an implementation of algo-
+       rithm described in Appendix C of ANSI X9.17 or RFC1750  with  exception
+       that  it  uses CAST or SHA-1 instead of Triple DES.  It uses local time
+       with precision of microseconds (see  gettimeofday(2))  and  /dev/random
        (if available) to produce initial random seed.
 
-       WAPG also have the ability to check  generated  password  quality  using
-       dictionary.  You  can  use  this  ability  if  you specify command-line
-       options -r dictfile or -b filtername where dictfile is  the  dictionary
+       apg  also  have  the  ability to check generated password quality using
+       dictionary. You can  use  this  ability  if  you  specify  command-line
+       options  -r  dictfile or -b filtername where dictfile is the dictionary
        file name and filtername is the name of Bloom filter file. In that dic-
-       tionary you may place words (one per line) that should  not  appear  as
-       generated  passwords.  For  example: user names, common words, etc. You
+       tionary  you  may  place words (one per line) that should not appear as
+       generated passwords. For example: user names, common  words,  etc.  You
        even can use one of the dictionaries that come with dictionary password
-       crackers.   Bloom  filter file should be created with WAPGbfm(1) utility
-       included in WAPG distribution. These  checks  are  case  sensitive.  For
-       example,  if you want to reject word 'root', you should insert in dict-
-       file words: root, Root, RoOt, ... , ROOT. It is not the easiest way  to
-       check  password  quality,  but  it  is the most powerful way. In future
-       releases I plan to implement some other techniques to  check  passwords
-       (like pattern check) just to make life easier.
+       crackers.  Bloom filter file should be created with  apgbfm(1)  utility
+       included  in  apg  distribution. In future releases I plan to implement
+       some other techniques to check passwords (like pattern check)  just  to
+       make life easier.
 
 
 OPTIONS
+   Password generation modes options
+       -a algorithm
+              use algorithm for password generation.
+              0 - (default) pronounceable password generation
+              1 - random character password generation
+
+       -n num_of_pass
+              generate num_of_pass number of passwords. Default is 6.
+
+       -m min_pass_len
+              generate   password   with   minimum  length  min_pass_len.   If
+              min_pass_len > max_pass_len then  max_pass_len  =  min_pass_len.
+              Default minimum password length is 8.
+
+       -x max_pass_len
+              generate   password   with   maximum  length  max_pass_len.   If
+              min_pass_len > max_pass_len then  max_pass_len  =  min_pass_len.
+              Default maximum password length is 10.
+
        -M mode
               Use  symbolsets  specified  with  mode  for password generation.
               mode is a text string consisting of characters S, s, N, n, C, c,
@@ -93,11 +109,6 @@ OPTIONS
               Examples:
               -M sncl or -M SNCL or -M Cn
 
-       -a algorithm
-              use algorithm for password generation.
-              0 - (default) pronounceable password generation
-              1 - random character password generation
-
        -E char_string
               exclude characters in char_string from password generation  pro-
               cess  (in  pronounceable  password  generation  mode you can not
@@ -107,56 +118,46 @@ OPTIONS
 
               Examples:
 
-              Command WAPG -a 1 -M n -n 3 -m 8 -e 23456789 will generate a  set
+              Command apg -a 1 -M n -n 3 -m 8 -E 23456789 will generate a  set
               of passwords that will look like this
               10100110
               01111000
               11011101
 
-              Command  WAPG  -a 1 -M nc -n 3 -m 26 -e GHIJKLMNOPQRSTUVWXYZ will
+              Command  apg  -a 1 -M nc -n 3 -m 26 -E GHIJKLMNOPQRSTUVWXYZ will
               generate a set of passwords that will look like this
               16A1653CD4DE5E7BD9584A3476
               C8F78E06944AFD57FB9CB882BC
               8C8DF37CD792D36D056BBD5002
 
+   Password quality control options
        -r dictfile
               check generated passwords for their appearance in dictfile
 
        -b filter_file
-              check generated passwords for their appearance  in  filter_file.
-              filter_file should be created with WAPGBFM utility.
+              check  generated  passwords for their appearance in filter_file.
+              filter_file should be created with apgbfm(1) utility.
 
        -p min_substr_len
-              this  option tells WAPG  to  check every substring of the gener-
+              this option tells apg(1) to check every substring of the  gener-
               ated password for appearance in filter_file. If any of such sub-
-              strings  would  be  found  in  the  filter_file  then  generated
-              password would be rejected and WAPG  will  generate another one.
-              min_substr_len  specifies  minimum  substring  length  to check.
+              strings would be found in the filter_file then  generated  pass-
+              word  would  be  rejected  and apg(1) will generate another one.
+              min_substr_len specifies  minimum  substring  length  to  check.
               This option is active only if -b option is defined.
 
+   Pseudo random number generator options
        -c cl_seed
-              use cl_seed as a random seed for password generation. I  use  it
+              use  cl_seed  as a random seed for password generation. I use it
               when i have to generate passwords in a shell script.
 
-       -d     do  NOT use any delimiters between generated passwords. I use it
+   Password output options
+       -d     do NOT use any delimiters between generated passwords. I use  it
               when i have to generate passwords in a shell script.
-
-       -n num_of_pass
-              generate num_of_pass number of passwords. Default is 6.
-
-       -m min_pass_len
-              generate  password  with  minimum   length   min_pass_len.    If
-              min_pass_len  >  max_pass_len  then max_pass_len = min_pass_len.
-              Default minimum password length is 8.
-
-       -x max_pass_len
-              generate  password  with  maximum   length   max_pass_len.    If
-              min_pass_len  >  max_pass_len  then max_pass_len = min_pass_len.
-              Default maximum password length is 10.
 
        -q     quiet mode (do not print warnings)
 
-       -l     spell  genetated  passwords. Useful when you want to read gener-
+       -l     spell genetated passwords. Useful when you want to  read  gener-
               ated password by telephone.
               WARNING: Think twice before read your password by phone.
 
@@ -167,10 +168,13 @@ OPTIONS
        -v     print version information and exit
 
 DEFAULT OPTIONS
-       WAPG -a 0 -M sncl -n 6 -x 10 -m 8 (new style)
+       apg -a 0 -M sncl -n 6 -x 10 -m 8 (new style)
+
+       If  you want to generate really secure passwords, you should use option
+       -s.
 
 EXIT CODE
-       On successful completion of its task, WAPG will complete with exit  code
+       On  successful completion of its task, apg will complete with exit code
        0.  An exit code of -1 indicates an error occurred.  Textual errors are
        written to the standard error stream.
 
@@ -178,15 +182,15 @@ FILES
        None.
 
 BUGS
-       None.  If you've found one, please send bug description to the  author.
+       None.   If you've found one, please send bug description to the author.
 
 SEE ALSO
-       WAPGBFM.TXT
+       wapgbfm.txt
 
 AUTHOR
        Adel I. Mirzazhanov, <a-del@iname.com>
-       Project home page: http://www.adel.nursat.kz/WAPG/
+       Project home page: http://www.adel.nursat.kz/apg/
 
 
 
-Automated Password Generator      2003 Jun 19                           WAPG(1)
+Automated Password Generator      2003 Aug 04                             WAPG

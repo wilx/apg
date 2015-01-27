@@ -11,7 +11,7 @@ apgd
 .B apgd
 [\fB-a algorithm\fP] [\fB-M mode\fP] [\fB-E char_string\fP]
 [\fB-n num_of_pass\fP] [\fB-m min_pass_len\fP] [\fB-x max_pass_len\fP]
-[\fB-r\fP \fIdictfile\fP] [\fB-b\fP \fIfilter_file\fP] [\fB-p min_substr_len\fP]
+[\fB-r\fP \fIdictfile\fP] [\fB-b\fP \fIfilter_file\fP] [\fB-p min_substr_len\fP] [\fB-k\fP]
 [\fB-t\fP] [\fB-l\fP]
 .PP
 .SH DESCRIPTION
@@ -224,6 +224,10 @@ that will look like this
 .br
 .RE
 .SS "Password quality control options"
+.TP
+.B -k
+check every generated password using \fBcracklib\fP. To use this ability you must
+enable cracklib support during programm building.
 .TP
 .B -r \fIdictfile\fP
 check generated passwords for their appearance in 
