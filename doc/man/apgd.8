@@ -1,0 +1,277 @@
+.\" Man page for apgd.
+.\" Licensed under BSD-like License.
+.\" Created by Adel I. Mirzazhanov
+.\"
+.TH APGD 8 "2003 Jun 19" "Automated Password Generator" "User Manual"
+.SH NAME
+apgd
+\- server that generates several random passwords
+
+.SH SYNOPSIS
+.B apgd
+[\fB-a algorithm\fP] [\fB-M mode\fP] [\fB-E char_string\fP]
+[\fB-n num_of_pass\fP] [\fB-m min_pass_len\fP] [\fB-x max_pass_len\fP]
+[\fB-r\fP \fIdictfile\fP] [\fB-b\fP \fIfilter_file\fP] [\fB-p min_substr_len\fP]
+[\fB-t\fP] [\fB-l\fP]
+.PP
+.SH DESCRIPTION
+.B apgd
+program is a server that supports
+.B "Password Generation Protocol"
+described in
+.B RFC972.
+It uses several password generation algorithms (currently two) and a built-in
+pseudo random number generator.
+.PP
+.B apgd
+is normally invoked by the Internet superserver (see 
+.B inetd
+(8))  for requests to connect to the pwdgen port (pwdgen port is 129 according to
+.B RFC1700
+) as indicated by the
+.I /etc/services
+file (see
+.B services
+(5)).
+.PP
+Default algorithm is pronounceable password generation algorithm
+designed by
+.B Morrie Gasser
+and described in
+.B """A Random Word Generator For Pronounceable Passwords"""
+.I National Technical Information Service (NTIS)
+.B AD-A-017676.
+The original paper is very old and had never been put online,
+so I have to use
+.I NIST
+implementation described in 
+.B FIPS-181.
+.PP
+Another algorithm is simple random character generation algorithm, but it
+uses four user-defined symbol sets to produce random password. It means that
+user can choose type of symbols that should appear in password. Symbol sets
+are: numeric symbol set
+.I (0,...,9)
+, capital letters symbol set
+.I (A,...,Z)
+, small letters symbol set
+.I (a,...,z)
+and special symbols symbol set
+.I (#,@,!,...).
+.PP
+Built-in pseudo random number generator is an implementation of algorithm
+described in
+.B Appendix C of ANSI X9.17
+or
+.B RFC1750
+with exception that it uses
+.I CAST
+or
+.I SHA-1
+instead of
+.I Triple DES.
+It uses local time with precision of microseconds (see
+\fBgettimeofday\fP(2)) and \fI/dev/random\fP (if available) to produce
+initial random seed.
+.PP
+.B apgd
+also have the ability to check generated password quality using
+dictionary. You can use this ability if you specify command-line option
+.B -r
+.I dictfile
+or
+.B -b
+.I filtername
+where \fIdictfile\fP is dictionary file name and \fIfiltername\fP is the
+name of Bloom filter file. In that dictionary you may place words
+(one per line) that should not appear as generated passwords. For example: user names
+common words, etc. You even can use one of the dictionaries that come with
+.I dictionary password crackers.
+Bloom filter file should be created with \fBapgbfm\fP(1) utility included
+in apg distribution. These checks are case sensitive. For example, if you
+want to reject word 'root', you should insert in \fIdictfile\fP words: root,
+Root, RoOt, ... , ROOT. It is not the easiest way to check password quality,
+but it is the most powerful way. In future releases I plan to implement some
+other techniques to check passwords just to make life easier.
+.PP
+.B apgd
+has the ability log user password generation activity and internal debug information. It does this
+using
+.br
+.I facility
+=
+.I daemon
+.RS
+.br
+.I priority
+=
+.I info
+for user password generation activity logging
+.br
+.I priority
+=
+.I debug
+for internal debug information
+.br
+.RE
+See the \fBsyslogd\fP(8) and \fBsyslog.conf\fP(5) man pages for information on how to configure your syslog daemon.
+.sp
+.SH "OPTIONS"
+.TP
+.B -M mode
+Use symbolsets specified with \fBmode\fP for password generation.
+\fBmode\fP is a text string consisting of characters \fBS\fP, \fBs\fP, \fBN\fP, \fBn\fP,
+\fBC\fP, \fBc\fP, \fBL\fP, \fBl\fP. Where:
+.RS
+.TP
+.B S
+generator \fBmust\fP use special symbol set for every generated password.
+.TP
+.B s
+generator \fBshould\fP use special symbol set for password generation.
+.TP
+.B N
+generator \fBmust\fP use numeral symbol set for every generated password.
+.TP
+.B n
+generator \fBshould\fP use numeral symbol set for password generation.
+.TP
+.B C
+generator \fBmust\fP use capital symbol set for every generated password.
+.TP
+.B c
+generator \fBshould\fP use capital symbol set for password generation.
+.TP
+.B L
+generator \fBmust\fP use small letters symbol set for every generated password
+(always present if pronounceable password
+generation algorithm is used).
+.TP
+.B l
+generator \fBshould\fP use small letters symbol set for password generation.
+.TP
+.B R,r
+not supported any more. Use \fB-E char_string\fP option instead.
+.RE
+.RS
+.br
+\fBmode\fP can not be more than 4 characters in
+length.
+.PP
+.B Note:
+.br
+Usage of L, M, N, C will slow down password generation process.
+.PP
+.B Examples:
+.br
+\fB-M sncl\fP or \fB-M SNCL\fP or \fB-M Cn\fP
+.RE
+.TP
+.B -a algorithm
+use 
+.B algorithm
+for password generation.
+.RS
+.B 0
+- (default) pronounceable password generation
+.br
+.B 1
+- random character password generation
+.RE
+.TP
+.B -E char_string
+exclude characters in \fBchar_string\fP from password generation process (in pronounceable
+password generation mode you can not exclude small letters). To include special symbols
+that can be recognized by shell (apostrophe, quotes, dollar sign, etc.) in \fBchar_string\fP
+use the backslashed versions.
+.RS
+.PP
+.B Examples:
+.PP
+Command \fBapgd -a 1 -M n -n 3 -m 8 -e 23456789\fP will generate a set of passwords that
+will look like this
+.br
+\fB10100110\fP
+.br
+\fB01111000\fP
+.br
+\fB11011101\fP
+.br
+.PP
+Command \fBapgd -a 1 -M nc -n 3 -m 26 -e GHIJKLMNOPQRSTUVWXYZ\fP will generate a set of passwords
+that will look like this
+.br
+\fB16A1653CD4DE5E7BD9584A3476\fP
+.br
+\fBC8F78E06944AFD57FB9CB882BC\fP
+.br
+\fB8C8DF37CD792D36D056BBD5002\fP
+.br
+.RE
+.TP
+.B -r \fIdictfile\fP
+check generated passwords for their appearance in 
+.B dictfile
+.TP
+.B -b \fIfilter_file\fP
+check generated passwords for their appearance in 
+\fIfilter_file\fP. \fIfilter_file\fP should be created with \fBapgbfm\fP(1)
+utility.
+.TP
+.B -p min_substr_len
+this option tells \fBapg\fP(1) to check every substring of the generated
+password for appearance in \fIfilter_file\fP. If any of such substrings would
+be found in the \fIfilter_file\fP then generated password would be rejected
+and apg(1) will generate another one.
+\fBmin_substr_len\fP is specifies minimum substring length to check.
+This option is active only if \fB-b\fP option is defined.
+.TP
+.B -n num_of_pass
+generate 
+.B num_of_pass
+number of passwords. Default is 6.
+.TP
+.B -m min_pass_len
+generate password with minimum length 
+.B min_pass_len.
+If \fBmin_pass_len > max_pass_len\fP then \fBmax_pass_len = min_pass_len\fP.
+Default minimum password length is 8.
+.TP
+.B -x max_pass_len
+generate password with maximum length 
+.B max_pass_len
+If \fBmin_pass_len > max_pass_len\fP then \fBmax_pass_len = min_pass_len\fP.
+Default maximum password length is 10.
+.TP
+.B -l
+spell genetated passwords. Useful when you want to read generated password by telephone.
+.RS
+.B WARNING:
+Think twice before read your password by phone.
+.RE
+.TP
+.B -t
+print pronunciation for generated pronounceable password
+.SH "DEFAULT OPTIONS"
+\fBapgd -a 0 -M sncl -n 6 -x 10 -m 8\fP (new style)
+.SH "EXIT CODE"
+On successful completion of its task,
+.B apgd
+will complete with exit code 0.  An exit code of -1 indicates an error
+occurred.  Textual errors are written to the
+.B syslogd
+(8).
+.SH "DIAGNOSTICS"
+All textual info is written to the
+\fBsyslogd\fP(8).
+.SH "FILES"
+.B None.
+.SH "BUGS"
+.B None.
+If you've found one, please send bug description to the author.
+.SH "SEE ALSO"
+\fBapg\fP(1), \fBapgbfm\fP(1)
+.SH "AUTHOR"
+Adel I. Mirzazhanov, <a-del@iname.com>
+.br
+Project home page: http://www.adel.nursat.kz/apg/
