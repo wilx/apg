@@ -11,15 +11,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,11 +34,14 @@
 */
 
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
-#include <strings.h> 
+#include <strings.h>
 #endif /* WIN32 */
 #include <time.h>
 #include <sys/types.h>
@@ -1272,14 +1275,14 @@ gen_pron_pass (char *word, char *hyphenated_word, USHORT minlen,
 
     int     pwlen;
 
- /* 
+ /*
   * Check for minlen>maxlen.  This is an error.
   * and a length of 0.
   */
     if (minlen > maxlen || minlen > APG_MAX_PASSWORD_LENGTH ||
         maxlen > APG_MAX_PASSWORD_LENGTH)
       return (-1);
- /* 
+ /*
   * Check for zero length words.  This is technically not an error,
   * so we take the short cut and return a null word and a length of 0.
   */
@@ -1290,7 +1293,7 @@ gen_pron_pass (char *word, char *hyphenated_word, USHORT minlen,
      return (0);
     }
 
- /* 
+ /*
   * Find password.
   */
     pwlen = gen_word (word, hyphenated_word, get_random (minlen, maxlen), pass_mode);
@@ -1352,8 +1355,8 @@ gen_word (char *word, char *hyphenated_word, USHORT pwlen, unsigned int pass_mod
     if ( (word_units     = (USHORT *) calloc (sizeof (USHORT), pwlen+1))==NULL ||
          (syllable_units = (USHORT *) calloc (sizeof (USHORT), pwlen+1))==NULL ||
          (new_syllable   = (char *) calloc (sizeof (USHORT), pwlen+1))  ==NULL ||
-	 (syllable_for_hyph = (char *) calloc (sizeof(char), 20))==NULL)
-	   return(-1);
+         (syllable_for_hyph = (char *) calloc (sizeof(char), 20))==NULL)
+           return(-1);
 
     /*
      * Find syllables until the entire word is constructed.
@@ -1365,7 +1368,7 @@ gen_word (char *word, char *hyphenated_word, USHORT pwlen, unsigned int pass_mod
       */
      (void) gen_syllable (new_syllable, pwlen - word_length, syllable_units, &syllable_size);
      syllable_length = strlen (new_syllable);
-     
+
      /*
       * Append the syllable units to the word units.
       */
@@ -1373,7 +1376,7 @@ gen_word (char *word, char *hyphenated_word, USHORT pwlen, unsigned int pass_mod
          word_units[word_size + word_place] = syllable_units[word_place];
      word_size += syllable_size + 1;
 
-     /* 
+     /*
       * If the word has been improperly formed, throw out
       * the syllable.  The checks performed here are those
       * that must be formed on a word basis.  The other
@@ -1392,35 +1395,35 @@ gen_word (char *word, char *hyphenated_word, USHORT pwlen, unsigned int pass_mod
          {
           /*
           ** Modify syllable for numeric or capital symbols required
-          ** Should be done after word quality check. 
+          ** Should be done after word quality check.
           */
-	  dsd = randint(2);
+          dsd = randint(2);
           if ( ((pass_mode & S_NB) > 0) && (syllable_length == 1) && dsd == 0)
             {
              numerize(new_syllable);
-	     ch_flag = TRUE;
+             ch_flag = TRUE;
             }
           if ( ((pass_mode & S_SS) > 0) && (syllable_length == 1) && (dsd == 1))
             {
-	      specialize(new_syllable);
-	      ch_flag = TRUE;
-	    }
+              specialize(new_syllable);
+              ch_flag = TRUE;
+            }
           if ( ( (pass_mode & S_CL) > 0) && (ch_flag != TRUE))
              capitalize(new_syllable);
           ch_flag = FALSE;
           /**/
           (void) strcpy (word, new_syllable);
-	  if (syllable_length == 1)
-	     {
-	      symb2name(new_syllable, syllable_for_hyph);
+          if (syllable_length == 1)
+             {
+              symb2name(new_syllable, syllable_for_hyph);
               (void) strcpy (hyphenated_word, syllable_for_hyph);
-	     }
-	  else
-	     {
+             }
+          else
+             {
               (void) strcpy (hyphenated_word, new_syllable);
-	     }
-	  (void)memset ( (void *)new_syllable, 0, (size_t)(pwlen * sizeof(USHORT)+1));
-	  (void)memset ( (void *)syllable_for_hyph, 0, 20);
+             }
+          (void)memset ( (void *)new_syllable, 0, (size_t)(pwlen * sizeof(USHORT)+1));
+          (void)memset ( (void *)syllable_for_hyph, 0, 20);
          }
          else
          {
@@ -1428,39 +1431,39 @@ gen_word (char *word, char *hyphenated_word, USHORT pwlen, unsigned int pass_mod
           ** Modify syllable for numeric or capital symbols required
           ** Should be done after word quality check.
           */
-	  dsd = randint(2);
+          dsd = randint(2);
           if ( ((pass_mode & S_NB) > 0) && (syllable_length == 1) && (dsd == 0))
             {
              numerize(new_syllable);
-	     ch_flag = TRUE;
+             ch_flag = TRUE;
             }
           if ( ( (pass_mode & S_SS) > 0) && (syllable_length == 1) && (dsd == 1))
             {
-	     specialize(new_syllable);
-	     ch_flag = TRUE;
-	    }
+             specialize(new_syllable);
+             ch_flag = TRUE;
+            }
           if ( ( (pass_mode & S_CL) > 0) && (ch_flag != TRUE))
              capitalize(new_syllable);
           ch_flag = FALSE;
           /**/
           (void) strcat (word, new_syllable);
           (void) strcat (hyphenated_word, "-");
-	  if (syllable_length == 1)
-	     {
-	      symb2name(new_syllable, syllable_for_hyph);
+          if (syllable_length == 1)
+             {
+              symb2name(new_syllable, syllable_for_hyph);
               (void) strcat (hyphenated_word, syllable_for_hyph);
-	     }
-	  else
-	     {
+             }
+          else
+             {
               (void) strcat (hyphenated_word, new_syllable);
-	     }
-	  (void)memset ( (void *)new_syllable, 0, (size_t)(pwlen * sizeof(USHORT)+1));
-	  (void)memset ( (void *)syllable_for_hyph, 0, 20);
+             }
+          (void)memset ( (void *)new_syllable, 0, (size_t)(pwlen * sizeof(USHORT)+1));
+          (void)memset ( (void *)syllable_for_hyph, 0, 20);
          }
          word_length += syllable_length;
      }
 
-       /* 
+       /*
         * Keep track of the times we have tried to get
         * syllables.  If we have exceeded the threshold,
         * reinitialize the pwlen and word_size variables, clear
@@ -1477,7 +1480,7 @@ gen_word (char *word, char *hyphenated_word, USHORT pwlen, unsigned int pass_mod
      }
     }
 
-    /* 
+    /*
      * The units arrays and syllable storage are internal to this
      * routine.  Since the caller has no need for them, we
      * release the space.
@@ -1513,7 +1516,7 @@ improper_word (USHORT *units, USHORT word_size)
     for (unit_count = 0; !failure && (unit_count < word_size);
          unit_count++)
     {
-     /* 
+     /*
       * Check for ILLEGAL_PAIR.  This should have been caught
       * for units within a syllable, but in some cases it
       * would have gone unnoticed for units between syllables
@@ -1525,7 +1528,7 @@ improper_word (USHORT *units, USHORT word_size)
               ILLEGAL_PAIR))
          failure = TRUE;
 
-     /* 
+     /*
       * Check for consecutive vowels or consonants.  Because
       * the initial y of a syllable is treated as a consonant
       * rather than as a vowel, we exclude y from the first
@@ -1690,7 +1693,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
      */
     do
     {
-     /* 
+     /*
       * Try for a new syllable.  Initialize all pertinent
       * syllable variables.
       */
@@ -1715,13 +1718,13 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
           */
          do
          {
-          /* 
+          /*
            * If there are saved_unit's from the previous
            * syllable, use them up first.
            */
           if (saved_unit != 0)
           {
-              /* 
+              /*
                * If there were two saved units, the first is
                * guaranteed (by checks performed in the previous
                * syllable) to be valid.  We ignore the checks
@@ -1737,7 +1740,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                length_left -= strlen (syllable);
               }
 
-              /* 
+              /*
                * The unit becomes the last unit checked in the
                * previous syllable.
                */
@@ -1752,7 +1755,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
               saved_unit = 0;
           }
           else
-              /* 
+              /*
                * If we don't have to scoff the saved units,
                * we generate a Random one.  If we know it has
                * to be a vowel, we get one rather than looping
@@ -1779,14 +1782,14 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
            */
           if (current_unit == 0)
           {
-              /* 
+              /*
                * If the shouldn't begin a syllable, don't
                * use it.
                */
               if (rules[unit].flags & NOT_BEGIN_SYLLABLE)
                rule_broken = TRUE;
               else
-               /* 
+               /*
                 * If this is the last unit of a word,
                 * we have a one unit syllable.  Since each
                 * syllable must have a vowel, we make sure
@@ -1794,16 +1797,16 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                 * discard it.
                 */
                if (length_left == 0)
-	          {
+                  {
                    if (rules[unit].flags & VOWEL)
                     want_another_unit = FALSE;
                    else
                     rule_broken = TRUE;
-		  }
+                  }
           }
           else
           {
-              /* 
+              /*
                * There are some digram tests that are
                * universally true.  We test them out.
                */
@@ -1838,7 +1841,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
               }
               else
               {
-               /* 
+               /*
                 * We are not at the start of a syllable.
                 * Save the previous unit for later tests.
                 */
@@ -1921,7 +1924,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                          * syllable, but if the syllable left here
                          * is not proper (i.e., the resulting last
                          * digram cannot legally end it), just
-                         * discard it and try for another.   
+                         * discard it and try for another.
                          */
                         if (digram[units_in_syllable
                               [current_unit - 2]]
@@ -1935,7 +1938,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                          want_another_unit = FALSE;
                         }
                     }
-		  }
+                  }
               }
 
               /*
@@ -1961,10 +1964,10 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                      * the length of the word.
                      */
                     (ALLOWED (END) || (length_left == 0)))
-		   {
+                   {
                    want_another_unit = FALSE;
-		   }
-	       else
+                   }
+               else
                    /*
                     * Since we have a vowel in the syllable
                     * already, if the digram calls for the end of the
@@ -2003,9 +2006,9 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                    }
                    else
                     if (ALLOWED (SUFFIX))
-		     {
+                     {
                         want_vowel = TRUE;
-		     }
+                     }
               }
           }
 /********/
@@ -2025,7 +2028,7 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
           */
          if (tries <= MAX_RETRIES)
          {
-          /* 
+          /*
            * If the unit were a vowel, count it in.
            * However, if the unit were a y and appear
            * at the start of the syllable, treat it
@@ -2038,21 +2041,21 @@ gen_syllable (char *syllable, USHORT pwlen, USHORT *units_in_syllable,
                    !(rules[unit].flags & ALTERNATE_VOWEL)))
               vowel_count++;
 
-          /* 
+          /*
            * If a unit or units were to be saved, we must
            * adjust the syllable formed.  Otherwise, we
            * append the current unit to the syllable.
            */
           switch (saved_unit)
           {
-              case 0: 
+              case 0:
                units_in_syllable[current_unit] = unit;
                (void) strcat (syllable, rules[unit].unit_code);
                break;
-              case 1: 
+              case 1:
                current_unit--;
                break;
-              case 2: 
+              case 2:
                (void) strcpy (&syllable[strlen (syllable) -
                         strlen (rules[last_unit].unit_code)],"");
                length_left += (short int) strlen (rules[last_unit].unit_code);
@@ -2105,7 +2108,7 @@ illegal_placement (USHORT *units, USHORT pwlen)
     {
      if (unit_count >= 1)
      {
-         /* 
+         /*
           * Don't allow vowels to be split with consonants in
           * a single syllable.  If we find such a combination
           * (except for the silent e) we have to discard the
@@ -2145,7 +2148,7 @@ illegal_placement (USHORT *units, USHORT pwlen)
           failure = TRUE;
      }
 
-     /* 
+     /*
       * Count the vowels in the syllable.  As mentioned somewhere
       * above, exclude the initial y of a syllable.  Instead,
       * treat it as a consonant.
@@ -2249,7 +2252,7 @@ random_unit (USHORT type)
 {
      USHORT number;
 
-    /* 
+    /*
      * Sometimes, we are asked to explicitly get a vowel (i.e., if
      * a digram pair expects one following it).  This is a shortcut
      * to do that and avoid looping with rejected consonants.
@@ -2257,7 +2260,7 @@ random_unit (USHORT type)
     if (type & VOWEL)
      number = vowel_numbers[get_random (0, (sizeof (vowel_numbers) / sizeof (USHORT))-1)];
     else
-     /* 
+     /*
       * Get any letter according to the English distribution.
       */
      number = numbers[get_random (0, (sizeof (numbers) / sizeof (USHORT))-1)];

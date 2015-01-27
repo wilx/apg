@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,6 +31,9 @@
 ** randpass.c - Random password generation module of PWGEN program
 */
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -69,7 +72,7 @@ gen_rand_pass (char *password_string, int minl, int maxl, unsigned int pass_mode
   if (minl > APG_MAX_PASSWORD_LENGTH || maxl > APG_MAX_PASSWORD_LENGTH ||
       minl < 1 || maxl < 1 || minl > maxl)
       return (-1);
-  for (i = 0; i <= 93; i++) random_weight[i] = 0; 
+  for (i = 0; i <= 93; i++) random_weight[i] = 0;
   length = minl + randint(maxl-minl+1);
   str_pointer = password_string;
 
@@ -78,16 +81,16 @@ gen_rand_pass (char *password_string, int minl, int maxl, unsigned int pass_mode
 /* Asign random weight in weight array if mode is present*/
       for (j = 0; j <= 93 ; j++)
          if ( ( (pass_mode & smbl[j].type) > 0) &&
-	     !( (S_RS & smbl[j].type) > 0))
-	    random_weight[j] = 1 + randint(20000);
+             !( (S_RS & smbl[j].type) > 0))
+            random_weight[j] = 1 + randint(20000);
       j = 0;
 /* Find an element with maximum weight */
       for (j = 0; j <= 93; j++)
-	if (random_weight[j] > max_weight)
-	  {
-	    max_weight = random_weight[j];
-	    max_weight_element_number = j;
-	  }
+        if (random_weight[j] > max_weight)
+          {
+            max_weight = random_weight[j];
+            max_weight_element_number = j;
+          }
 /* Get password symbol */
       *str_pointer = smbl[max_weight_element_number].ch;
       str_pointer++;
@@ -118,14 +121,14 @@ gen_rand_symbol (char *symbol, unsigned int mode)
   int max_weight = 0;
   int max_weight_element_number = 0;
 
-  for (j = 0; j <= 93; j++) random_weight[j] = 0; 
+  for (j = 0; j <= 93; j++) random_weight[j] = 0;
   str_pointer = symbol;
   j = 0;
 /* Asign random weight in weight array if mode is present*/
   for (j = 0; j <= 93 ; j++)
      if ( ( (mode & smbl[j].type) > 0) &&
          !( (S_RS & smbl[j].type) > 0))
-	   random_weight[j] = 1 + randint(20000);
+           random_weight[j] = 1 + randint(20000);
   j = 0;
 /* Find an element with maximum weight */
   for (j = 0; j <= 93; j++)

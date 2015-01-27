@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,6 +27,9 @@
 ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
@@ -38,7 +41,7 @@
 #include <sys/time.h>
 #include "rnd.h"
 
-#ifndef APG_USE_SHA 
+#ifndef APG_USE_SHA
 #  include "./cast/cast.h"
 #else /* APG_USE_SHA */
 #  include "./sha/sha.h"
@@ -80,7 +83,7 @@ UINT32
 x917cast_rnd (void)
 {
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
- struct timeval local_time; 
+ struct timeval local_time;
 #else
  clock_t local_time[2]; /* clock ticks for win32 */
 #endif
@@ -89,7 +92,7 @@ x917cast_rnd (void)
  UINT32 Xi[2] = {0L,0L};
  UINT32 Xi_plus_I[2] = {0L,0L};
  cast_key ky;
- 
+
 /**********************************************************************
 * ENCRYPTION KEY HEX : 0x000102030405060708090A0B0C0D0E0F (128-bit)   *
 * YOU CAN CHANGE IT IF YOU WANT                                       *

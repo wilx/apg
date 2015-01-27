@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,6 +30,9 @@
 /*
 ** Main Module of apg programm
 */
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
@@ -108,7 +111,7 @@
  struct pass_m {
         unsigned int pass;	         /* password generation mode        */
         unsigned int filter;	         /* password generation mode        */
-	};
+        };
 #ifndef CLISERV
 UINT32 get_user_seq (void);
 UINT32 com_line_user_seq (char * seq);
@@ -128,12 +131,12 @@ main (int argc, char *argv[])
 {
  int i = 0;
  int restrict_res = 0;
- 
+
  char *pass_string;
  char *hyph_pass_string;
  time_t tme;
- 
- 
+
+
  int option = 0;                         /* programm option                 */
 
  int algorithm = 0;                      /* algorithm for generation        */
@@ -216,8 +219,8 @@ main (int argc, char *argv[])
       if(mode.filter != 0)
         {
          filter_restrict_present = TRUE;
-	 restrictions_present = TRUE;
-	}
+         restrictions_present = TRUE;
+        }
       break;
      case 'E': /* exclude char */
       if(set_exclude_list(apg_optarg)==-1)
@@ -275,7 +278,7 @@ main (int argc, char *argv[])
 #ifdef APG_USE_CRYPT
      case 'y': /* display crypt(3)'d text next to passwords */
       show_crypt_text = TRUE;
-      break;                                                                  
+      break;
 #endif /* APG_USE_CRYPT */
 #endif /* CLISERV */
      case 'n': /* number of password specification */
@@ -323,7 +326,7 @@ main (int argc, char *argv[])
  if (min_pass_length > max_pass_length)
     max_pass_length = min_pass_length;
  /* main code section */
- 
+
  /*
  ** reserv space for password and hyphenated password and report of errors
  ** 18 because the maximum length of element for hyphenated password is 17
@@ -334,7 +337,7 @@ main (int argc, char *argv[])
 #ifndef CLISERV
 #ifdef APG_USE_CRYPT
  if (show_crypt_text == TRUE)
-   if ((crypt_string = (char *)calloc (1, 255))==NULL)      
+   if ((crypt_string = (char *)calloc (1, 255))==NULL)
       err_sys_fatal("calloc");
 #endif /* APG_USE_CRYPT */
 #endif /* CLISERV */
@@ -357,7 +360,7 @@ main (int argc, char *argv[])
 #ifdef APG_USE_CRYPT
      if (show_crypt_text == TRUE)
          (void) memcpy ((void *)crypt_string,
-	                (void *)crypt_passstring (pass_string), 255);
+                        (void *)crypt_passstring (pass_string), 255);
 #endif /* APG_USE_CRYPT */
 #endif /* CLISERV */
      /***************************************
@@ -367,69 +370,69 @@ main (int argc, char *argv[])
        {
         /* Filter check */
         if (filter_restrict_present == TRUE)
-	  restrict_res = filter_check_pass(pass_string, mode.filter);
-	/* Bloom-filter check */
-	if (restrict_res == 0)
-	 {
-	  if (bloom_restrict_present == TRUE)
-	   {
-	    if(paranoid_bloom_restrict_present != TRUE)
+          restrict_res = filter_check_pass(pass_string, mode.filter);
+        /* Bloom-filter check */
+        if (restrict_res == 0)
+         {
+          if (bloom_restrict_present == TRUE)
+           {
+            if(paranoid_bloom_restrict_present != TRUE)
               restrict_res = bloom_check_pass(pass_string, restrictions_file);
-	    else
-	      restrict_res = paranoid_bloom_check_pass(pass_string, restrictions_file, min_substr_len);
-	   }
-	 }
+            else
+              restrict_res = paranoid_bloom_check_pass(pass_string, restrictions_file, min_substr_len);
+           }
+         }
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
 #if defined(APG_USE_CRACKLIB)
         /* Cracklib check */
-	if (restrict_res == 0)
-	 if(cracklib_restrict_present == TRUE)
-	  restrict_res = cracklib_check_pass (pass_string, CRACKLIB_DICTPATH);
+        if (restrict_res == 0)
+         if(cracklib_restrict_present == TRUE)
+          restrict_res = cracklib_check_pass (pass_string, CRACKLIB_DICTPATH);
 #endif /* APG_USE_CRACKLIB */
 #endif /* WIN32 */
-	 /* Dictionary check */
-	if (restrict_res == 0)
-	 if (plain_restrictions_present == TRUE)
+         /* Dictionary check */
+        if (restrict_res == 0)
+         if (plain_restrictions_present == TRUE)
           restrict_res = check_pass(pass_string, plain_restrictions_file);
 
 
         switch (restrict_res)
-	  {
-	  case 0:
+          {
+          case 0:
 #ifndef CLISERV
             fprintf (stdout, "%s", pass_string);
             if (hyph_req_present == TRUE)
-	      fprintf (stdout, " (%s)", hyph_pass_string);
+              fprintf (stdout, " (%s)", hyph_pass_string);
 #ifdef APG_USE_CRYPT
             if (show_crypt_text == TRUE)
-	      fprintf (stdout, " %s", crypt_string);
+              fprintf (stdout, " %s", crypt_string);
 #endif /* APG_USE_CRYPT */
-	    if (spell_present == TRUE)
-	     {
-	      spell_pass_string = spell_word(pass_string, spell_pass_string);
-	      fprintf (stdout, (" %s"), spell_pass_string);
-	      free((void*)spell_pass_string);
-	     }
-	    if ( delimiter_flag_present == FALSE )
-	       fprintf (stdout, "\n");
-	    fflush (stdout);
+            if (spell_present == TRUE)
+             {
+              spell_pass_string = spell_word(pass_string, spell_pass_string);
+              fprintf (stdout, (" %s"), spell_pass_string);
+              free((void*)spell_pass_string);
+             }
+            if ( delimiter_flag_present == FALSE )
+               fprintf (stdout, "\n");
+            fflush (stdout);
 #else /* CLISERV */
             if (hyph_req_present == TRUE)
              snprintf(out_pass, max_pass_length*19 + 4, "%s (%s)", pass_string, hyph_pass_string);
-	    else
-             snprintf(out_pass, max_pass_length*19 + 4, "%s", pass_string);	    
-	    write (0, (void*) out_pass, strlen(out_pass));
-	    write (0, (void*)&delim[0],2);
+            else
+             snprintf(out_pass, max_pass_length*19 + 4, "%s", pass_string);
+            write (0, (void*) out_pass, strlen(out_pass));
+            write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
-	    i++;
-	    break;
-	  case 1:
-	    break;
-	  case -1:
-	    err_sys_fatal ("check_pass");
-	  default:
-	    break;
-	  } /* switch */
+            i++;
+            break;
+          case 1:
+            break;
+          case -1:
+            err_sys_fatal ("check_pass");
+          default:
+            break;
+          } /* switch */
        }
      /******************************************
      ** ALGORITHM = 0 RESTRICTIONS = NOT_PRESENT
@@ -439,29 +442,29 @@ main (int argc, char *argv[])
 #ifndef CLISERV
         fprintf (stdout, "%s", pass_string);
         if (hyph_req_present == TRUE)
-	  fprintf (stdout, " (%s)", hyph_pass_string);
+          fprintf (stdout, " (%s)", hyph_pass_string);
 #ifdef APG_USE_CRYPT
         if (show_crypt_text == TRUE)
-	  fprintf (stdout, " %s", crypt_string);
+          fprintf (stdout, " %s", crypt_string);
 #endif /* APG_USE_CRYPT */
-	if (spell_present == TRUE)
-	 {
-	  spell_pass_string = spell_word(pass_string, spell_pass_string);
-	  fprintf (stdout, (" %s"), spell_pass_string);
-	  free((void*)spell_pass_string);
-	 }
+        if (spell_present == TRUE)
+         {
+          spell_pass_string = spell_word(pass_string, spell_pass_string);
+          fprintf (stdout, (" %s"), spell_pass_string);
+          free((void*)spell_pass_string);
+         }
         if ( delimiter_flag_present == FALSE )
-	   fprintf (stdout, "\n");
-	fflush (stdout);
+           fprintf (stdout, "\n");
+        fflush (stdout);
 #else /* CLISERV */
         if (hyph_req_present == TRUE)
          snprintf(out_pass, max_pass_length*19 + 4, "%s (%s)", pass_string, hyph_pass_string);
-	else
-         snprintf(out_pass, max_pass_length*19 + 4, "%s", pass_string);	    
-	write (0, (void*) out_pass, strlen(out_pass));
-	write (0, (void*)&delim[0],2);
+        else
+         snprintf(out_pass, max_pass_length*19 + 4, "%s", pass_string);
+        write (0, (void*) out_pass, strlen(out_pass));
+        write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
-	i++;
+        i++;
        }
     }
    /***************************************
@@ -476,7 +479,7 @@ main (int argc, char *argv[])
 #ifdef APG_USE_CRYPT
      if (show_crypt_text == TRUE)
          (void)memcpy ((void *)crypt_string,
-	               (void *)crypt_passstring(pass_string), 255);
+                       (void *)crypt_passstring(pass_string), 255);
 #endif /* APG_USE_CRYPT */
 #endif /* CLISERV */
      /***************************************
@@ -486,64 +489,64 @@ main (int argc, char *argv[])
        {
         /* Filter check */
         if (filter_restrict_present == TRUE)
-	  restrict_res = filter_check_pass(pass_string, mode.filter);
-	/* Bloom-filter check */
-	if (restrict_res == 0)
-	 {
-	  if (bloom_restrict_present == TRUE)
-	   {
-	    if(paranoid_bloom_restrict_present != TRUE)
+          restrict_res = filter_check_pass(pass_string, mode.filter);
+        /* Bloom-filter check */
+        if (restrict_res == 0)
+         {
+          if (bloom_restrict_present == TRUE)
+           {
+            if(paranoid_bloom_restrict_present != TRUE)
               restrict_res = bloom_check_pass(pass_string, restrictions_file);
-	    else
-	      restrict_res = paranoid_bloom_check_pass(pass_string, restrictions_file, min_substr_len);
-	   }
-	 }
+            else
+              restrict_res = paranoid_bloom_check_pass(pass_string, restrictions_file, min_substr_len);
+           }
+         }
 #if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
 #if defined(APG_USE_CRACKLIB)
         /* Cracklib check */
-	if (restrict_res == 0)
-	 if(cracklib_restrict_present == TRUE)
-	  restrict_res = cracklib_check_pass (pass_string, CRACKLIB_DICTPATH);
+        if (restrict_res == 0)
+         if(cracklib_restrict_present == TRUE)
+          restrict_res = cracklib_check_pass (pass_string, CRACKLIB_DICTPATH);
 #endif /* APG_USE_CRACKLIB */
 #endif /* WIN32 */
-	 /* Dictionary check */
-	if (restrict_res == 0)
-	 if (plain_restrictions_present == TRUE)
+         /* Dictionary check */
+        if (restrict_res == 0)
+         if (plain_restrictions_present == TRUE)
           restrict_res = check_pass(pass_string, plain_restrictions_file);
 
 
         switch (restrict_res)
-	  {
-	  case 0:
+          {
+          case 0:
 #ifndef CLISERV
 #ifdef APG_USE_CRYPT
             if (show_crypt_text==TRUE)
-	      fprintf (stdout, "%s %s", pass_string, crypt_string);
-	    else
+              fprintf (stdout, "%s %s", pass_string, crypt_string);
+            else
 #endif /* APG_USE_CRYPT */
-	      fprintf (stdout, "%s", pass_string);
-	    if (spell_present == TRUE)
-	     {
-	      spell_pass_string = spell_word(pass_string, spell_pass_string);
-	      fprintf (stdout, (" %s"), spell_pass_string);
-	      free((void*)spell_pass_string);
-	     }
-	    if ( delimiter_flag_present == FALSE )
-	       fprintf (stdout, "\n");
-	    fflush (stdout);
+              fprintf (stdout, "%s", pass_string);
+            if (spell_present == TRUE)
+             {
+              spell_pass_string = spell_word(pass_string, spell_pass_string);
+              fprintf (stdout, (" %s"), spell_pass_string);
+              free((void*)spell_pass_string);
+             }
+            if ( delimiter_flag_present == FALSE )
+               fprintf (stdout, "\n");
+            fflush (stdout);
 #else /* CLISERV */
-	    write (0, (void*)pass_string, strlen(pass_string));
-	    write (0, (void*)&delim[0],2);
+            write (0, (void*)pass_string, strlen(pass_string));
+            write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
-	    i++;
-	    break;
-	  case 1:
-	    break;
-	  case -1:
-	    err_sys_fatal ("check_pass");
-	  default:
-	    break;
-	  } /* switch */
+            i++;
+            break;
+          case 1:
+            break;
+          case -1:
+            err_sys_fatal ("check_pass");
+          default:
+            break;
+          } /* switch */
        }
      /***************************************
      ** ALGORITHM = 1 RESTRICTIONS = PRESENT
@@ -554,23 +557,23 @@ main (int argc, char *argv[])
 #ifdef APG_USE_CRYPT
         if (show_crypt_text==TRUE)
           fprintf (stdout, "%s %s", pass_string, crypt_string);
-	else
+        else
 #endif /* APG_USE_CRYPT */
           fprintf (stdout, "%s", pass_string);
-	if (spell_present == TRUE)
-	 {
-	  spell_pass_string = spell_word(pass_string, spell_pass_string);
-	  fprintf (stdout, (" %s"), spell_pass_string);
-	  free((void*)spell_pass_string);
-	 }
-	if ( delimiter_flag_present == FALSE )
-	   fprintf (stdout, "\n");
-	fflush (stdout);
+        if (spell_present == TRUE)
+         {
+          spell_pass_string = spell_word(pass_string, spell_pass_string);
+          fprintf (stdout, (" %s"), spell_pass_string);
+          free((void*)spell_pass_string);
+         }
+        if ( delimiter_flag_present == FALSE )
+           fprintf (stdout, "\n");
+        fflush (stdout);
 #else /* CLISERV */
-	write (0, (void*)pass_string, strlen(pass_string));
-	write (0, (void*)&delim[0],2);
+        write (0, (void*)pass_string, strlen(pass_string));
+        write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
-	i++;
+        i++;
        }
     } /* end of if (algorithm == 1) */
    else
@@ -703,7 +706,7 @@ print_help (void)
 ** INPUT:
 **   const char * - password string
 ** OUTPUT:
-**   char * - crypted password 
+**   char * - crypted password
 ** NOTES:
 **   none.
 */
@@ -756,9 +759,9 @@ int construct_mode(char *s_mode, struct  pass_m * mde)
  int ch = 0;
  int i = 0;
  int str_length = 0;
- 
+
  str_length = strlen(s_mode);
- 
+
  if (str_length > MAX_MODE_LENGTH)
      return(-1);
  for (i=0; i < str_length; i++)
@@ -804,4 +807,3 @@ int construct_mode(char *s_mode, struct  pass_m * mde)
  mde->filter = filter;
  return (0);
 }
-

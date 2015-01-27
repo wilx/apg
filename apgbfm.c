@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,6 +28,9 @@
 */
 
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdlib.h>
 #include <unistd.h>
 #include "bloom.h"
@@ -54,7 +57,7 @@ int
 main (int argc, char *argv[])
 {
  int option = 0;
- 
+
  char *dictfile;         /* dictionary filename                 */
  FILE *f_dictfile;       /* dictionary file descriptor          */
 
@@ -83,73 +86,73 @@ main (int argc, char *argv[])
  /* end of flags section */
 
  /* Analize options */
- if (argc < 2) 
+ if (argc < 2)
     {
      print_help();
      exit(-1);
     }
- 
+
  while ((option = apg_getopt (argc, argv, "a:A:c:C:n:d:f:i:hvqs")) != -1)
    {
     switch(option)
       {
        case 'a':
          word = apg_optarg;
-	 add_word_flag = TRUE;
-	 dummy_test = dummy_test + 2;
+         add_word_flag = TRUE;
+         dummy_test = dummy_test + 2;
          break;
        case 'A':
          dictfile = apg_optarg;
-	 add_file_flag = TRUE;
-	 dummy_test = dummy_test + 2;
+         add_file_flag = TRUE;
+         dummy_test = dummy_test + 2;
          break;
        case 'c':
          word = apg_optarg;
-	 check_word_flag = TRUE;
-	 dummy_test = dummy_test + 2;
+         check_word_flag = TRUE;
+         dummy_test = dummy_test + 2;
          break;
        case 'C':
          dictfile = apg_optarg;
-	 check_file_flag = TRUE;
-	 dummy_test = dummy_test + 2;
+         check_file_flag = TRUE;
+         dummy_test = dummy_test + 2;
          break;
        case 'n':
          checkopt(apg_optarg);
          wc = atoi(apg_optarg);
-	 new_flag = TRUE;
-	 dummy_test = dummy_test + 2;
+         new_flag = TRUE;
+         dummy_test = dummy_test + 2;
          break;
        case 'd':
          dictfile = apg_optarg;
-	 new_from_dict_flag = TRUE;
-	 dummy_test = dummy_test + 2;
+         new_from_dict_flag = TRUE;
+         dummy_test = dummy_test + 2;
          break;
        case 'f':
          filter = apg_optarg;
-	 filter_flag = TRUE;
-	 dummy_test = dummy_test + 1;
+         filter_flag = TRUE;
+         dummy_test = dummy_test + 1;
          break;
        case 'h':
          print_help();
-	 return (0);                                                               
+         return (0);
        case 'v':
          printf ("APG Bloom filter management programm");
-	 printf ("\nversion %s", VERSION);
-	 printf ("\nCopyright (c) 2001, 2002, 2003 Adel I. Mirzazhanov\n");
-	 return (0);
+         printf ("\nversion %s", VERSION);
+         printf ("\nCopyright (c) 2001, 2002, 2003 Adel I. Mirzazhanov\n");
+         return (0);
        case 'i':
-	 print_filter_info(apg_optarg);
-	 return (0);
+         print_filter_info(apg_optarg);
+         return (0);
        case 'q':
          silent_flag = TRUE;
-	 break;
+         break;
        case 's':
          flt_mode = flt_mode | BF_CASE_INSENSITIVE;
          case_insensitive_flag = TRUE;
-	 break;
+         break;
        default:
          print_help();
-	 exit(-1);
+         exit(-1);
       }
    }
  if (filter_flag != TRUE) err_app_fatal ("apg", "-f option is required");
@@ -164,7 +167,7 @@ main (int argc, char *argv[])
      flt_mode    = get_filtermode(f_filter);
      if (filter_size == 0) err_sys_fatal("get_filtersize");
      if ( insert_word (word, f_filter, filter_size, flt_mode) == -1)
-	    err_sys_fatal("insert_word");
+            err_sys_fatal("insert_word");
      if (silent_flag != TRUE)
         printf ("Word %s added\n",word);
      return (0);
@@ -182,20 +185,20 @@ main (int argc, char *argv[])
      while ((fgets(word, MAX_DICT_STRLEN, f_dictfile) != NULL))
         {
          tmp = (char *)strtok (word," \t\n\0");
-	 if( tmp != NULL)
-	   word = tmp;
-	 else continue;
+         if( tmp != NULL)
+           word = tmp;
+         else continue;
          if ( insert_word (word, f_filter, filter_size, flt_mode) == -1)
-	    err_sys_fatal("insert_word");
-	 i++;
-	 if (silent_flag != TRUE)
-	    {
+            err_sys_fatal("insert_word");
+         i++;
+         if (silent_flag != TRUE)
+            {
              if ( i % 100 == 0)
-	        {
-	         fprintf (stdout,".");
-	         fflush (stdout);
-	        }
-	    }
+                {
+                 fprintf (stdout,".");
+                 fflush (stdout);
+                }
+            }
          (void)memset((void *)word, 0, MAX_DICT_STRLEN);
         }
      if (silent_flag != TRUE) printf ("\n");
@@ -213,17 +216,17 @@ main (int argc, char *argv[])
 
      if (filter_size == 0) err_sys_fatal("get_filtersize");
      switch(check_word (word, f_filter, filter_size, flt_mode))
-	{
-	 case -1:
-	    err_sys_fatal("check_word");
-	    break;
+        {
+         case -1:
+            err_sys_fatal("check_word");
+            break;
          case 1:
-	    printf ("%s: %s \n",word, FOUND);
-	    break;
+            printf ("%s: %s \n",word, FOUND);
+            break;
          case 0:
-	    printf ("%s: %s\n",word, NOT_FOUND);
-	    break;
-	}
+            printf ("%s: %s\n",word, NOT_FOUND);
+            break;
+        }
      return (0);
     }
  if (check_file_flag == TRUE) /* -C dictfile */
@@ -242,21 +245,21 @@ main (int argc, char *argv[])
      while ((fgets(word, MAX_DICT_STRLEN, f_dictfile) != NULL))
         {
          tmp = (char *)strtok (word," \t\n\0");
-	 if( tmp != NULL)
-	   word = tmp;
-	 else continue;
+         if( tmp != NULL)
+           word = tmp;
+         else continue;
          switch(check_word (word, f_filter, filter_size, flt_mode))
-	    {
-	     case -1:
-	        err_sys_fatal("check_word");
-	        break;
+            {
+             case -1:
+                err_sys_fatal("check_word");
+                break;
              case 1:
-	        printf ("%s: %s\n",word, FOUND);
-	        break;
+                printf ("%s: %s\n",word, FOUND);
+                break;
              case 0:
-	        printf ("%s: %s\n",word, NOT_FOUND);
-	        break;
-	    }
+                printf ("%s: %s\n",word, NOT_FOUND);
+                break;
+            }
          (void)memset((void *)word, 0, MAX_DICT_STRLEN);
         }
      free ( (void *)word);
@@ -280,7 +283,7 @@ main (int argc, char *argv[])
         {
          fprintf (stdout,"Counting words in dictionary. Please wait...\n");
          fflush (stdout);
-	}
+        }
      wc = count_words (f_dictfile);
      if (wc == 0) err_sys_fatal("count_words");
      if( (f_filter = create_filter(filter, wc, flt_mode)) == NULL)
@@ -290,25 +293,25 @@ main (int argc, char *argv[])
      while ((fgets(word, MAX_DICT_STRLEN, f_dictfile) != NULL))
         {
          tmp = (char *)strtok (word," \t\n\0");
-	 if( tmp != NULL)
-	  {
-	   word = tmp;
-	  }
-	 else
-	  {
-	   continue;
-	  }
+         if( tmp != NULL)
+          {
+           word = tmp;
+          }
+         else
+          {
+           continue;
+          }
          if ( insert_word (word, f_filter, filter_size, flt_mode) == -1)
-	    err_sys_fatal("insert_word");
-	 i++;
-	 if (silent_flag != TRUE)
-	    {
+            err_sys_fatal("insert_word");
+         i++;
+         if (silent_flag != TRUE)
+            {
              if ( i % 100 == 0)
-	        {
+                {
                  fprintf (stdout, ".");
-	         fflush (stdout);
-	        }
-	    }
+                 fflush (stdout);
+                }
+            }
          (void)memset((void *)word, 0, MAX_DICT_STRLEN);
         }
      if (silent_flag != TRUE) printf ("\n");

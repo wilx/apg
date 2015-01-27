@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,6 +30,9 @@
 /*
 ** restrict.c
 */
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +45,7 @@ extern struct sym smbl[94];
 **   char * - dictionary filename.
 ** OUTPUT:
 **   int
-**    -1 - error 
+**    -1 - error
 **     1 - password exist in dictionary
 **     0 - password does not exist in dictionary
 ** NOTES:
@@ -56,7 +59,7 @@ check_pass(char *pass, char *dict)
  char *tmp;
  if( (string = (char *) calloc(1,MAX_DICT_STRING_SIZE)) == NULL)
    return(-1);
- 
+
 #ifdef APG_DEBUG
  fprintf (stdout, "DEBUG> check_pass: ck pass: %s\n", pass);
  fflush (stdout);
@@ -88,7 +91,7 @@ check_pass(char *pass, char *dict)
   }
  free ( (void *)string);
  fclose (dct);
- return (0); 
+ return (0);
 }
 
 /*
@@ -99,7 +102,7 @@ check_pass(char *pass, char *dict)
 **   char * - bloom-filter filename.
 ** OUTPUT:
 **   int
-**    -1 - error 
+**    -1 - error
 **     1 - password exist in dictionary
 **     0 - password does not exist in dictionary
 ** NOTES:
@@ -130,7 +133,7 @@ bloom_check_pass (char *word, char *filter)
 **   USHORT - minimum substring length
 ** OUTPUT:
 **   int
-**    -1 - error 
+**    -1 - error
 **     1 - password exist in dictionary
 **     0 - password does not exist in dictionary
 ** NOTES:
@@ -156,7 +159,7 @@ paranoid_bloom_check_pass (char * password, char *filter, USHORT s_len)
 
  if ((substring = (char *)calloc(1, (size_t)len))==NULL)
    return (-1);
- 
+
  for (c_substr_start_pos = 0; c_substr_start_pos <= len-s_len; c_substr_start_pos++)
   for (substr_len = s_len; substr_len <= len-c_substr_start_pos; substr_len++)
    {
@@ -193,7 +196,7 @@ paranoid_bloom_check_pass (char * password, char *filter, USHORT s_len)
 **   char * - cracklib dict.
 ** OUTPUT:
 **   int
-**    -1 - error 
+**    -1 - error
 **     1 - password does not pass this check
 **     0 - password does pass this check
 ** NOTES:
@@ -224,7 +227,7 @@ cracklib_check_pass(char *pw, char *dictpath)
 **   char * - bloom-filter filename.
 ** OUTPUT:
 **   int
-**    -1 - error 
+**    -1 - error
 **     1 - password do not pass the filter
 **     0 - password pass the filter
 ** NOTES:
@@ -249,25 +252,25 @@ filter_check_pass(const char * word, unsigned int cond)
     for (i=0; i < 94; i++)
        if ((smbl[i].type & S_SS) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
-	     ss_ret = 1;
+             ss_ret = 1;
  i = 0;
  if ((cond & S_SL) > 0)
     for (i=0; i < 94; i++)
        if ((smbl[i].type & S_SL) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
-	     sl_ret = 1;
+             sl_ret = 1;
  i = 0;
  if ((cond & S_CL) > 0)
     for (i=0; i < 94; i++)
        if ((smbl[i].type & S_CL) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
-	     cl_ret = 1;
+             cl_ret = 1;
  i = 0;
  if ((cond & S_NB) > 0)
     for (i=0; i < 94; i++)
        if ((smbl[i].type & S_NB) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
-	     nb_ret = 1;
+             nb_ret = 1;
  if (((cond & S_SS) > 0) &&(ss_ret != 1)) return (1);
  if (((cond & S_SL) > 0) &&(sl_ret != 1)) return (1);
  if (((cond & S_CL) > 0) &&(cl_ret != 1)) return (1);
@@ -289,7 +292,7 @@ filter_check_pass(const char * word, unsigned int cond)
 ** OUTPUT:
 **   int - return code
 **    0 - OK
-**   -1 - char_string is too long (max 93) 
+**   -1 - char_string is too long (max 93)
 ** NOTES:
 **   none.
 */

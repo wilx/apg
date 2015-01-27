@@ -12,6 +12,9 @@
  * This file is in the Public Domain.
  */
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 #include "getopt.h"
 
@@ -32,63 +35,63 @@ static const char	*prog = "apg";
 static int
 badopt(const char *mess,int ch)
 {
-	if (apg_opterr) {
-		fprintf(stderr,"%s%s%c\n", prog, mess, ch);
-		fflush(stderr);
-	}
-	return ('?');
+        if (apg_opterr) {
+                fprintf(stderr,"%s%s%c\n", prog, mess, ch);
+                fflush(stderr);
+        }
+        return ('?');
 }
 
 int
 apg_getopt(int argc,char *argv[],const char *optstring)
 {
-	register char c;
-	register const char *place;
+        register char c;
+        register const char *place;
 
-	prog = argv[0];
-	apg_optarg = NULL;
+        prog = argv[0];
+        apg_optarg = NULL;
 
-	if (apg_optind == 0) {
-		scan = NULL;
-		apg_optind++;
-	}
-	
-	if (scan == NULL || *scan == '\0') {
-		if (apg_optind >= argc
-		    || argv[apg_optind][0] != '-'
-		    || argv[apg_optind][1] == '\0') {
-			return (EOF);
-		}
-		if (argv[apg_optind][1] == '-'
-		    && argv[apg_optind][2] == '\0') {
-			apg_optind++;
-			return (EOF);
-		}
-	
-		scan = argv[apg_optind++]+1;
-	}
+        if (apg_optind == 0) {
+                scan = NULL;
+                apg_optind++;
+        }
 
-	c = *scan++;
-	apg_optopt = c & 0377;
-	for (place = optstring; place != NULL && *place != '\0'; ++place)
-	    if (*place == c)
-		break;
+        if (scan == NULL || *scan == '\0') {
+                if (apg_optind >= argc
+                    || argv[apg_optind][0] != '-'
+                    || argv[apg_optind][1] == '\0') {
+                        return (EOF);
+                }
+                if (argv[apg_optind][1] == '-'
+                    && argv[apg_optind][2] == '\0') {
+                        apg_optind++;
+                        return (EOF);
+                }
 
-	if (place == NULL || *place == '\0' || c == ':' || c == '?') {
-		return (badopt(": unknown option -", c));
-	}
+                scan = argv[apg_optind++]+1;
+        }
 
-	place++;
-	if (*place == ':') {
-		if (*scan != '\0') {
-			apg_optarg = scan;
-			scan = NULL;
-		} else if (apg_optind >= argc) {
-			return (badopt(": option requires an argument -", c));
-		} else {
-			apg_optarg = argv[apg_optind++];
-		}
-	}
+        c = *scan++;
+        apg_optopt = c & 0377;
+        for (place = optstring; place != NULL && *place != '\0'; ++place)
+            if (*place == c)
+                break;
 
-	return (c & 0377);
+        if (place == NULL || *place == '\0' || c == ':' || c == '?') {
+                return (badopt(": unknown option -", c));
+        }
+
+        place++;
+        if (*place == ':') {
+                if (*scan != '\0') {
+                        apg_optarg = scan;
+                        scan = NULL;
+                } else if (apg_optind >= argc) {
+                        return (badopt(": option requires an argument -", c));
+                } else {
+                        apg_optarg = argv[apg_optind++];
+                }
+        }
+
+        return (c & 0377);
 }

@@ -12,6 +12,9 @@
 ** with libraries.
 */
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <string.h>
 #include "sha.h"
 
@@ -97,7 +100,7 @@ LONG A, B, C, D, E;
 /***************************************************************************/
 /* apg_shaInit								   */
 /*									   */
-/* Initialize the SHA values 						   */
+/* Initialize the SHA values                                               */
 /***************************************************************************/
 
 void apg_shaInit( apg_SHA_INFO *shaInfo )
@@ -218,7 +221,7 @@ static void byteReverse( LONG *buffer, int byteCount )
 void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count )
 {
   BYTE *db ;
-   
+
   db = (BYTE *) &(shaInfo->data[0]) ;
 
   /* Update bitcount */
@@ -232,13 +235,13 @@ void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count )
     {
       db[ shaInfo->slop++ ] = *(buffer++) ;
       if (shaInfo->slop == SHA_BLOCKSIZE)
-	{ /* transform this one block */
+        { /* transform this one block */
 #ifdef APG_LITTLE_ENDIAN
-	  byteReverse( shaInfo->data, SHA_BLOCKSIZE );
+          byteReverse( shaInfo->data, SHA_BLOCKSIZE );
 #endif /* APG_LITTLE_ENDIAN */
-	  shaTransform( shaInfo );
-	  shaInfo->slop = 0 ;	/* no slop left */
-	} /* if */
+          shaTransform( shaInfo );
+          shaInfo->slop = 0 ;	/* no slop left */
+        } /* if */
     } /* while */
 } /* apg_shaUpdate */
 

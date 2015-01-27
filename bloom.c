@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,7 +34,7 @@
 ** Functions:
 **   insert_word    - insert word in the filter file
 **   check_word     - check word
-**   create_filter  - create initial(empty) filter file 
+**   create_filter  - create initial(empty) filter file
 **   open_filter    - open APG Bloom filter file
 **   get_filtersize - get APG Bloom filter size
 **   get_filtermode - get APG Bloom filter mode
@@ -47,6 +47,9 @@
 **   putbit         - put the bit in the file.
 */
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include "bloom.h"
 #include "convert.h"
 
@@ -159,7 +162,7 @@ check_word(char *word, FILE *file,  h_val filter_size, f_mode mode)
  h_val h[H_NUM];
  int i = 0;
  char * tmp_word;
- 
+
  if ((tmp_word = (char *) calloc(1,MAX_DICT_STRLEN)) == NULL)
     return(-1);
  (void)memcpy ((void *) tmp_word, (void *) word, strlen(word));
@@ -187,10 +190,10 @@ check_word(char *word, FILE *file,  h_val filter_size, f_mode mode)
      {
       case 0:
         return(0);
-	break;
+        break;
       case -1:
         return(-1);
-	break;
+        break;
       default:
         break;
      }
@@ -206,7 +209,7 @@ check_word(char *word, FILE *file,  h_val filter_size, f_mode mode)
 **    const char *mode - "r" or "r+"
 ** OUTPUT:
 **    FILE * - file pointer
-**    NULL   - something wrong. 
+**    NULL   - something wrong.
 */
 FILE *
 open_filter(char * f_name, const char *mode)
@@ -215,7 +218,7 @@ open_filter(char * f_name, const char *mode)
  char etalon_bf_id[] = APGBF_ID;
  char etalon_bf_ver[] = APGBF_VERSION;
  struct apg_bf_hdr bf_hdr;
- 
+
  if ((f = fopen (f_name, mode)) == NULL)
    return(NULL);
  if (fread ( (void *)&bf_hdr, APGBFHDRSIZE, 1, f) != 1)
@@ -257,7 +260,7 @@ close_filter(FILE *f_dsk)
 **    FILE *f - filter file descriptor
 ** OUTPUT:
 **    h_val - size of APG Bloom filter.
-**    0     - something wrong 
+**    0     - something wrong
 */
 h_val
 get_filtersize(FILE * f)
@@ -271,7 +274,7 @@ get_filtersize(FILE * f)
  if (fseek (f, 0, SEEK_SET) == -1)
     return(0);
  return( (h_val)bf_hdr.fs);
-} 
+}
 
 /*
 ** get_filtermode - get APG Bloom filter mode
@@ -279,7 +282,7 @@ get_filtersize(FILE * f)
 **    FILE *f - filter file descriptor
 ** OUTPUT:
 **    f_mode - APG Bloom filter mode.
-**    0      - something wrong 
+**    0      - something wrong
 */
 f_mode
 get_filtermode(FILE *f)
@@ -296,7 +299,7 @@ get_filtermode(FILE *f)
 }
 
 /*
-** create_filter - create initial(empty) filter file 
+** create_filter - create initial(empty) filter file
 ** 5 - number of hash functions
 ** 0.0001 (0.01%) - probability of false positives
 ** INPUT:
@@ -321,7 +324,7 @@ get_filtermode(FILE *f)
 **       1 - 0.84151068
 */
 FILE *
-create_filter(char * f_name, unsigned long int n_words, f_mode mode) 
+create_filter(char * f_name, unsigned long int n_words, f_mode mode)
 {
  FILE *f;
  char zero = 0x00;
@@ -335,13 +338,13 @@ create_filter(char * f_name, unsigned long int n_words, f_mode mode)
  bf_hdr.id[2] = etalon_bf_id[2];
  bf_hdr.id[3] = etalon_bf_id[3];
  bf_hdr.id[4] = etalon_bf_id[4];
- 
+
  bf_hdr.version[0] = etalon_bf_ver[0];
  bf_hdr.version[1] = etalon_bf_ver[1];
  bf_hdr.version[2] = etalon_bf_ver[2];
 
  bf_hdr.fs = FSIZE_BIT(n_words);
- 
+
  bf_hdr.mode = mode;
 
  if ((f = fopen (f_name, "w+")) == NULL)
@@ -427,7 +430,7 @@ getbit(FILE * f, h_val bitnum)
  unsigned char read_byte = 0x00;
  unsigned char test_byte = 0x01;
  int i = 0;
- 
+
  bit_in_byte = bitnum % 8;
  bytenum =  APGBFHDRSIZE + (bitnum/8);
  if (fseek (f, bytenum, SEEK_SET) == -1)

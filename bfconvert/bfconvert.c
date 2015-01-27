@@ -5,18 +5,18 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions  of  source  code  must  retain  the  above
 **       copyright notice, this list of conditions and the following
-**       disclaimer. 
+**       disclaimer.
 **     2.Redistributions  in  binary  form  must reproduce the above
 **       copyright notice, this list of conditions and the following
 **       disclaimer  in  the  documentation  and/or  other materials
-**       provided with the distribution. 
+**       provided with the distribution.
 **     3.The  name  of  the  author  may  not  be used to endorse or
 **       promote  products  derived   from   this  software  without
-**       specific prior written permission. 
-** 		  
+**       specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,6 +41,9 @@
 ***************************************************************
 */
 
+#if defined (HAVE_CONFIG_H)
+#include "config.h"
+#endif
 #include <stdio.h>
 
 #define OLD_APGBF_HEADER_LEN  12
@@ -72,7 +75,7 @@ main(int argc, char *argv[])
  };
  struct new_apg_bf_hdr  new_bf_hdr;
  struct old_apg_bf_hdr  old_bf_hdr;
- 
+
  char old_etalon_bf_id[]  = OLD_APGBF_HEADER_ID;
 
  char new_etalon_bf_id[]  = NEW_APGBF_HEADER_ID;
@@ -80,7 +83,7 @@ main(int argc, char *argv[])
 
  FILE *old_f;  /* old filter file descriptor */
  FILE *new_f;  /* new filter file descriptor */
- 
+
  unsigned char tmp_buf; /* Temporary buffer */
 
  /* Checking arguments */
@@ -130,7 +133,7 @@ main(int argc, char *argv[])
  new_bf_hdr.version[2] = new_etalon_bf_ver[2];
  new_bf_hdr.fs = old_bf_hdr.fs;
  new_bf_hdr.mode = NEW_APGBF_HEADER_MODE;
- 
+
  /* Writing new filter header to output file */
  if (fwrite ( (void *)&new_bf_hdr, NEW_APGBF_HEADER_LEN, 1, new_f) != 1)
      {
@@ -162,7 +165,7 @@ main(int argc, char *argv[])
    perror("close new bloom-filter file");
    return(-1);
   }
-   
+
  printf("\nInput file has been successfuly converted\n");
  return(0);
 }
