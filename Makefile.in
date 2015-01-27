@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = apg$(EXEEXT)
+bin_PROGRAMS = apg$(EXEEXT) apgd$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_append_flag.m4 \
@@ -114,16 +114,26 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_apg_OBJECTS = bloom.$(OBJEXT) sha/sha.$(OBJEXT) cast/cast.$(OBJEXT) \
+am__objects_1 = bloom.$(OBJEXT) sha/sha.$(OBJEXT) cast/cast.$(OBJEXT) \
 	rnd.$(OBJEXT) pronpass.$(OBJEXT) randpass.$(OBJEXT) \
 	restrict.$(OBJEXT) errors.$(OBJEXT) apg.$(OBJEXT) \
 	getopt.$(OBJEXT) convert.$(OBJEXT)
+am_apg_OBJECTS = $(am__objects_1)
 apg_OBJECTS = $(am_apg_OBJECTS)
 apg_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am__objects_2 = apgd-bloom.$(OBJEXT) sha/apgd-sha.$(OBJEXT) \
+	cast/apgd-cast.$(OBJEXT) apgd-rnd.$(OBJEXT) \
+	apgd-pronpass.$(OBJEXT) apgd-randpass.$(OBJEXT) \
+	apgd-restrict.$(OBJEXT) apgd-errors.$(OBJEXT) \
+	apgd-apg.$(OBJEXT) apgd-getopt.$(OBJEXT) \
+	apgd-convert.$(OBJEXT)
+am_apgd_OBJECTS = $(am__objects_2)
+apgd_OBJECTS = $(am_apgd_OBJECTS)
+apgd_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -158,8 +168,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(apg_SOURCES)
-DIST_SOURCES = $(apg_SOURCES)
+SOURCES = $(apg_SOURCES) $(apgd_SOURCES)
+DIST_SOURCES = $(apg_SOURCES) $(apgd_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -328,7 +338,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include \
 	-I$(top_builddir)/include
 
 ACLOCAL_AMFLAGS = -I m4
-apg_SOURCES = \
+common_apg_sources = \
         bloom.c \
         sha/sha.c \
         cast/cast.c \
@@ -341,6 +351,9 @@ apg_SOURCES = \
         getopt.c \
         convert.c
 
+apg_SOURCES = $(common_apg_sources)
+apgd_SOURCES = $(common_apg_sources)
+apgd_CPPFLAGS = -DCLISERV
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -462,6 +475,14 @@ cast/cast.$(OBJEXT): cast/$(am__dirstamp) \
 apg$(EXEEXT): $(apg_OBJECTS) $(apg_DEPENDENCIES) $(EXTRA_apg_DEPENDENCIES) 
 	@rm -f apg$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(apg_OBJECTS) $(apg_LDADD) $(LIBS)
+sha/apgd-sha.$(OBJEXT): sha/$(am__dirstamp) \
+	sha/$(DEPDIR)/$(am__dirstamp)
+cast/apgd-cast.$(OBJEXT): cast/$(am__dirstamp) \
+	cast/$(DEPDIR)/$(am__dirstamp)
+
+apgd$(EXEEXT): $(apgd_OBJECTS) $(apgd_DEPENDENCIES) $(EXTRA_apgd_DEPENDENCIES) 
+	@rm -f apgd$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(apgd_OBJECTS) $(apgd_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -472,6 +493,15 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-apg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-bloom.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-convert.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-errors.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-getopt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-pronpass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-randpass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-restrict.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-rnd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bloom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/convert.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/errors.Po@am__quote@
@@ -480,7 +510,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/randpass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/restrict.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rnd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@cast/$(DEPDIR)/apgd-cast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cast/$(DEPDIR)/cast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sha/$(DEPDIR)/apgd-sha.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sha/$(DEPDIR)/sha.Po@am__quote@
 
 .c.o:
@@ -506,6 +538,160 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+apgd-bloom.o: bloom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-bloom.o -MD -MP -MF $(DEPDIR)/apgd-bloom.Tpo -c -o apgd-bloom.o `test -f 'bloom.c' || echo '$(srcdir)/'`bloom.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-bloom.Tpo $(DEPDIR)/apgd-bloom.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bloom.c' object='apgd-bloom.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-bloom.o `test -f 'bloom.c' || echo '$(srcdir)/'`bloom.c
+
+apgd-bloom.obj: bloom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-bloom.obj -MD -MP -MF $(DEPDIR)/apgd-bloom.Tpo -c -o apgd-bloom.obj `if test -f 'bloom.c'; then $(CYGPATH_W) 'bloom.c'; else $(CYGPATH_W) '$(srcdir)/bloom.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-bloom.Tpo $(DEPDIR)/apgd-bloom.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bloom.c' object='apgd-bloom.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-bloom.obj `if test -f 'bloom.c'; then $(CYGPATH_W) 'bloom.c'; else $(CYGPATH_W) '$(srcdir)/bloom.c'; fi`
+
+sha/apgd-sha.o: sha/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sha/apgd-sha.o -MD -MP -MF sha/$(DEPDIR)/apgd-sha.Tpo -c -o sha/apgd-sha.o `test -f 'sha/sha.c' || echo '$(srcdir)/'`sha/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) sha/$(DEPDIR)/apgd-sha.Tpo sha/$(DEPDIR)/apgd-sha.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sha/sha.c' object='sha/apgd-sha.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sha/apgd-sha.o `test -f 'sha/sha.c' || echo '$(srcdir)/'`sha/sha.c
+
+sha/apgd-sha.obj: sha/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sha/apgd-sha.obj -MD -MP -MF sha/$(DEPDIR)/apgd-sha.Tpo -c -o sha/apgd-sha.obj `if test -f 'sha/sha.c'; then $(CYGPATH_W) 'sha/sha.c'; else $(CYGPATH_W) '$(srcdir)/sha/sha.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) sha/$(DEPDIR)/apgd-sha.Tpo sha/$(DEPDIR)/apgd-sha.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sha/sha.c' object='sha/apgd-sha.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sha/apgd-sha.obj `if test -f 'sha/sha.c'; then $(CYGPATH_W) 'sha/sha.c'; else $(CYGPATH_W) '$(srcdir)/sha/sha.c'; fi`
+
+cast/apgd-cast.o: cast/cast.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cast/apgd-cast.o -MD -MP -MF cast/$(DEPDIR)/apgd-cast.Tpo -c -o cast/apgd-cast.o `test -f 'cast/cast.c' || echo '$(srcdir)/'`cast/cast.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) cast/$(DEPDIR)/apgd-cast.Tpo cast/$(DEPDIR)/apgd-cast.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cast/cast.c' object='cast/apgd-cast.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cast/apgd-cast.o `test -f 'cast/cast.c' || echo '$(srcdir)/'`cast/cast.c
+
+cast/apgd-cast.obj: cast/cast.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT cast/apgd-cast.obj -MD -MP -MF cast/$(DEPDIR)/apgd-cast.Tpo -c -o cast/apgd-cast.obj `if test -f 'cast/cast.c'; then $(CYGPATH_W) 'cast/cast.c'; else $(CYGPATH_W) '$(srcdir)/cast/cast.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) cast/$(DEPDIR)/apgd-cast.Tpo cast/$(DEPDIR)/apgd-cast.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cast/cast.c' object='cast/apgd-cast.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o cast/apgd-cast.obj `if test -f 'cast/cast.c'; then $(CYGPATH_W) 'cast/cast.c'; else $(CYGPATH_W) '$(srcdir)/cast/cast.c'; fi`
+
+apgd-rnd.o: rnd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-rnd.o -MD -MP -MF $(DEPDIR)/apgd-rnd.Tpo -c -o apgd-rnd.o `test -f 'rnd.c' || echo '$(srcdir)/'`rnd.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-rnd.Tpo $(DEPDIR)/apgd-rnd.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rnd.c' object='apgd-rnd.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-rnd.o `test -f 'rnd.c' || echo '$(srcdir)/'`rnd.c
+
+apgd-rnd.obj: rnd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-rnd.obj -MD -MP -MF $(DEPDIR)/apgd-rnd.Tpo -c -o apgd-rnd.obj `if test -f 'rnd.c'; then $(CYGPATH_W) 'rnd.c'; else $(CYGPATH_W) '$(srcdir)/rnd.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-rnd.Tpo $(DEPDIR)/apgd-rnd.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rnd.c' object='apgd-rnd.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-rnd.obj `if test -f 'rnd.c'; then $(CYGPATH_W) 'rnd.c'; else $(CYGPATH_W) '$(srcdir)/rnd.c'; fi`
+
+apgd-pronpass.o: pronpass.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-pronpass.o -MD -MP -MF $(DEPDIR)/apgd-pronpass.Tpo -c -o apgd-pronpass.o `test -f 'pronpass.c' || echo '$(srcdir)/'`pronpass.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-pronpass.Tpo $(DEPDIR)/apgd-pronpass.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pronpass.c' object='apgd-pronpass.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-pronpass.o `test -f 'pronpass.c' || echo '$(srcdir)/'`pronpass.c
+
+apgd-pronpass.obj: pronpass.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-pronpass.obj -MD -MP -MF $(DEPDIR)/apgd-pronpass.Tpo -c -o apgd-pronpass.obj `if test -f 'pronpass.c'; then $(CYGPATH_W) 'pronpass.c'; else $(CYGPATH_W) '$(srcdir)/pronpass.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-pronpass.Tpo $(DEPDIR)/apgd-pronpass.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pronpass.c' object='apgd-pronpass.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-pronpass.obj `if test -f 'pronpass.c'; then $(CYGPATH_W) 'pronpass.c'; else $(CYGPATH_W) '$(srcdir)/pronpass.c'; fi`
+
+apgd-randpass.o: randpass.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-randpass.o -MD -MP -MF $(DEPDIR)/apgd-randpass.Tpo -c -o apgd-randpass.o `test -f 'randpass.c' || echo '$(srcdir)/'`randpass.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-randpass.Tpo $(DEPDIR)/apgd-randpass.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='randpass.c' object='apgd-randpass.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-randpass.o `test -f 'randpass.c' || echo '$(srcdir)/'`randpass.c
+
+apgd-randpass.obj: randpass.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-randpass.obj -MD -MP -MF $(DEPDIR)/apgd-randpass.Tpo -c -o apgd-randpass.obj `if test -f 'randpass.c'; then $(CYGPATH_W) 'randpass.c'; else $(CYGPATH_W) '$(srcdir)/randpass.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-randpass.Tpo $(DEPDIR)/apgd-randpass.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='randpass.c' object='apgd-randpass.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-randpass.obj `if test -f 'randpass.c'; then $(CYGPATH_W) 'randpass.c'; else $(CYGPATH_W) '$(srcdir)/randpass.c'; fi`
+
+apgd-restrict.o: restrict.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-restrict.o -MD -MP -MF $(DEPDIR)/apgd-restrict.Tpo -c -o apgd-restrict.o `test -f 'restrict.c' || echo '$(srcdir)/'`restrict.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-restrict.Tpo $(DEPDIR)/apgd-restrict.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='restrict.c' object='apgd-restrict.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-restrict.o `test -f 'restrict.c' || echo '$(srcdir)/'`restrict.c
+
+apgd-restrict.obj: restrict.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-restrict.obj -MD -MP -MF $(DEPDIR)/apgd-restrict.Tpo -c -o apgd-restrict.obj `if test -f 'restrict.c'; then $(CYGPATH_W) 'restrict.c'; else $(CYGPATH_W) '$(srcdir)/restrict.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-restrict.Tpo $(DEPDIR)/apgd-restrict.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='restrict.c' object='apgd-restrict.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-restrict.obj `if test -f 'restrict.c'; then $(CYGPATH_W) 'restrict.c'; else $(CYGPATH_W) '$(srcdir)/restrict.c'; fi`
+
+apgd-errors.o: errors.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-errors.o -MD -MP -MF $(DEPDIR)/apgd-errors.Tpo -c -o apgd-errors.o `test -f 'errors.c' || echo '$(srcdir)/'`errors.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-errors.Tpo $(DEPDIR)/apgd-errors.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errors.c' object='apgd-errors.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-errors.o `test -f 'errors.c' || echo '$(srcdir)/'`errors.c
+
+apgd-errors.obj: errors.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-errors.obj -MD -MP -MF $(DEPDIR)/apgd-errors.Tpo -c -o apgd-errors.obj `if test -f 'errors.c'; then $(CYGPATH_W) 'errors.c'; else $(CYGPATH_W) '$(srcdir)/errors.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-errors.Tpo $(DEPDIR)/apgd-errors.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errors.c' object='apgd-errors.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-errors.obj `if test -f 'errors.c'; then $(CYGPATH_W) 'errors.c'; else $(CYGPATH_W) '$(srcdir)/errors.c'; fi`
+
+apgd-apg.o: apg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-apg.o -MD -MP -MF $(DEPDIR)/apgd-apg.Tpo -c -o apgd-apg.o `test -f 'apg.c' || echo '$(srcdir)/'`apg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-apg.Tpo $(DEPDIR)/apgd-apg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='apg.c' object='apgd-apg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-apg.o `test -f 'apg.c' || echo '$(srcdir)/'`apg.c
+
+apgd-apg.obj: apg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-apg.obj -MD -MP -MF $(DEPDIR)/apgd-apg.Tpo -c -o apgd-apg.obj `if test -f 'apg.c'; then $(CYGPATH_W) 'apg.c'; else $(CYGPATH_W) '$(srcdir)/apg.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-apg.Tpo $(DEPDIR)/apgd-apg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='apg.c' object='apgd-apg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-apg.obj `if test -f 'apg.c'; then $(CYGPATH_W) 'apg.c'; else $(CYGPATH_W) '$(srcdir)/apg.c'; fi`
+
+apgd-getopt.o: getopt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-getopt.o -MD -MP -MF $(DEPDIR)/apgd-getopt.Tpo -c -o apgd-getopt.o `test -f 'getopt.c' || echo '$(srcdir)/'`getopt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-getopt.Tpo $(DEPDIR)/apgd-getopt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='getopt.c' object='apgd-getopt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-getopt.o `test -f 'getopt.c' || echo '$(srcdir)/'`getopt.c
+
+apgd-getopt.obj: getopt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-getopt.obj -MD -MP -MF $(DEPDIR)/apgd-getopt.Tpo -c -o apgd-getopt.obj `if test -f 'getopt.c'; then $(CYGPATH_W) 'getopt.c'; else $(CYGPATH_W) '$(srcdir)/getopt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-getopt.Tpo $(DEPDIR)/apgd-getopt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='getopt.c' object='apgd-getopt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-getopt.obj `if test -f 'getopt.c'; then $(CYGPATH_W) 'getopt.c'; else $(CYGPATH_W) '$(srcdir)/getopt.c'; fi`
+
+apgd-convert.o: convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-convert.o -MD -MP -MF $(DEPDIR)/apgd-convert.Tpo -c -o apgd-convert.o `test -f 'convert.c' || echo '$(srcdir)/'`convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-convert.Tpo $(DEPDIR)/apgd-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='convert.c' object='apgd-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-convert.o `test -f 'convert.c' || echo '$(srcdir)/'`convert.c
+
+apgd-convert.obj: convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-convert.obj -MD -MP -MF $(DEPDIR)/apgd-convert.Tpo -c -o apgd-convert.obj `if test -f 'convert.c'; then $(CYGPATH_W) 'convert.c'; else $(CYGPATH_W) '$(srcdir)/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgd-convert.Tpo $(DEPDIR)/apgd-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='convert.c' object='apgd-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgd-convert.obj `if test -f 'convert.c'; then $(CYGPATH_W) 'convert.c'; else $(CYGPATH_W) '$(srcdir)/convert.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
