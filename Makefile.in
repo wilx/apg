@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = apg$(EXEEXT) apgd$(EXEEXT)
+bin_PROGRAMS = apg$(EXEEXT) apgd$(EXEEXT) apgbfm$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_append_flag.m4 \
@@ -125,6 +125,11 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_apgbfm_OBJECTS = apgbfm-apgbfm.$(OBJEXT) apgbfm-bloom.$(OBJEXT) \
+	sha/apgbfm-sha.$(OBJEXT) apgbfm-errors.$(OBJEXT) \
+	apgbfm-getopt.$(OBJEXT) apgbfm-convert.$(OBJEXT)
+apgbfm_OBJECTS = $(am_apgbfm_OBJECTS)
+apgbfm_LDADD = $(LDADD)
 am__objects_2 = apgd-bloom.$(OBJEXT) sha/apgd-sha.$(OBJEXT) \
 	cast/apgd-cast.$(OBJEXT) apgd-rnd.$(OBJEXT) \
 	apgd-pronpass.$(OBJEXT) apgd-randpass.$(OBJEXT) \
@@ -168,8 +173,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(apg_SOURCES) $(apgd_SOURCES)
-DIST_SOURCES = $(apg_SOURCES) $(apgd_SOURCES)
+SOURCES = $(apg_SOURCES) $(apgbfm_SOURCES) $(apgd_SOURCES)
+DIST_SOURCES = $(apg_SOURCES) $(apgbfm_SOURCES) $(apgd_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -354,6 +359,8 @@ common_apg_sources = \
 apg_SOURCES = $(common_apg_sources)
 apgd_SOURCES = $(common_apg_sources)
 apgd_CPPFLAGS = -DCLISERV
+apgbfm_SOURCES = apgbfm.c bloom.c sha/sha.c errors.c getopt.c convert.c
+apgbfm_CPPFLAGS = -DAPGBFM
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -475,6 +482,12 @@ cast/cast.$(OBJEXT): cast/$(am__dirstamp) \
 apg$(EXEEXT): $(apg_OBJECTS) $(apg_DEPENDENCIES) $(EXTRA_apg_DEPENDENCIES) 
 	@rm -f apg$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(apg_OBJECTS) $(apg_LDADD) $(LIBS)
+sha/apgbfm-sha.$(OBJEXT): sha/$(am__dirstamp) \
+	sha/$(DEPDIR)/$(am__dirstamp)
+
+apgbfm$(EXEEXT): $(apgbfm_OBJECTS) $(apgbfm_DEPENDENCIES) $(EXTRA_apgbfm_DEPENDENCIES) 
+	@rm -f apgbfm$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(apgbfm_OBJECTS) $(apgbfm_LDADD) $(LIBS)
 sha/apgd-sha.$(OBJEXT): sha/$(am__dirstamp) \
 	sha/$(DEPDIR)/$(am__dirstamp)
 cast/apgd-cast.$(OBJEXT): cast/$(am__dirstamp) \
@@ -493,6 +506,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgbfm-apgbfm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgbfm-bloom.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgbfm-convert.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgbfm-errors.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgbfm-getopt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-apg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-bloom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apgd-convert.Po@am__quote@
@@ -512,6 +530,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rnd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cast/$(DEPDIR)/apgd-cast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cast/$(DEPDIR)/cast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@sha/$(DEPDIR)/apgbfm-sha.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sha/$(DEPDIR)/apgd-sha.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@sha/$(DEPDIR)/sha.Po@am__quote@
 
@@ -538,6 +557,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+apgbfm-apgbfm.o: apgbfm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-apgbfm.o -MD -MP -MF $(DEPDIR)/apgbfm-apgbfm.Tpo -c -o apgbfm-apgbfm.o `test -f 'apgbfm.c' || echo '$(srcdir)/'`apgbfm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-apgbfm.Tpo $(DEPDIR)/apgbfm-apgbfm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='apgbfm.c' object='apgbfm-apgbfm.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-apgbfm.o `test -f 'apgbfm.c' || echo '$(srcdir)/'`apgbfm.c
+
+apgbfm-apgbfm.obj: apgbfm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-apgbfm.obj -MD -MP -MF $(DEPDIR)/apgbfm-apgbfm.Tpo -c -o apgbfm-apgbfm.obj `if test -f 'apgbfm.c'; then $(CYGPATH_W) 'apgbfm.c'; else $(CYGPATH_W) '$(srcdir)/apgbfm.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-apgbfm.Tpo $(DEPDIR)/apgbfm-apgbfm.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='apgbfm.c' object='apgbfm-apgbfm.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-apgbfm.obj `if test -f 'apgbfm.c'; then $(CYGPATH_W) 'apgbfm.c'; else $(CYGPATH_W) '$(srcdir)/apgbfm.c'; fi`
+
+apgbfm-bloom.o: bloom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-bloom.o -MD -MP -MF $(DEPDIR)/apgbfm-bloom.Tpo -c -o apgbfm-bloom.o `test -f 'bloom.c' || echo '$(srcdir)/'`bloom.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-bloom.Tpo $(DEPDIR)/apgbfm-bloom.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bloom.c' object='apgbfm-bloom.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-bloom.o `test -f 'bloom.c' || echo '$(srcdir)/'`bloom.c
+
+apgbfm-bloom.obj: bloom.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-bloom.obj -MD -MP -MF $(DEPDIR)/apgbfm-bloom.Tpo -c -o apgbfm-bloom.obj `if test -f 'bloom.c'; then $(CYGPATH_W) 'bloom.c'; else $(CYGPATH_W) '$(srcdir)/bloom.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-bloom.Tpo $(DEPDIR)/apgbfm-bloom.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='bloom.c' object='apgbfm-bloom.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-bloom.obj `if test -f 'bloom.c'; then $(CYGPATH_W) 'bloom.c'; else $(CYGPATH_W) '$(srcdir)/bloom.c'; fi`
+
+sha/apgbfm-sha.o: sha/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sha/apgbfm-sha.o -MD -MP -MF sha/$(DEPDIR)/apgbfm-sha.Tpo -c -o sha/apgbfm-sha.o `test -f 'sha/sha.c' || echo '$(srcdir)/'`sha/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) sha/$(DEPDIR)/apgbfm-sha.Tpo sha/$(DEPDIR)/apgbfm-sha.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sha/sha.c' object='sha/apgbfm-sha.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sha/apgbfm-sha.o `test -f 'sha/sha.c' || echo '$(srcdir)/'`sha/sha.c
+
+sha/apgbfm-sha.obj: sha/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sha/apgbfm-sha.obj -MD -MP -MF sha/$(DEPDIR)/apgbfm-sha.Tpo -c -o sha/apgbfm-sha.obj `if test -f 'sha/sha.c'; then $(CYGPATH_W) 'sha/sha.c'; else $(CYGPATH_W) '$(srcdir)/sha/sha.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) sha/$(DEPDIR)/apgbfm-sha.Tpo sha/$(DEPDIR)/apgbfm-sha.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='sha/sha.c' object='sha/apgbfm-sha.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sha/apgbfm-sha.obj `if test -f 'sha/sha.c'; then $(CYGPATH_W) 'sha/sha.c'; else $(CYGPATH_W) '$(srcdir)/sha/sha.c'; fi`
+
+apgbfm-errors.o: errors.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-errors.o -MD -MP -MF $(DEPDIR)/apgbfm-errors.Tpo -c -o apgbfm-errors.o `test -f 'errors.c' || echo '$(srcdir)/'`errors.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-errors.Tpo $(DEPDIR)/apgbfm-errors.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errors.c' object='apgbfm-errors.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-errors.o `test -f 'errors.c' || echo '$(srcdir)/'`errors.c
+
+apgbfm-errors.obj: errors.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-errors.obj -MD -MP -MF $(DEPDIR)/apgbfm-errors.Tpo -c -o apgbfm-errors.obj `if test -f 'errors.c'; then $(CYGPATH_W) 'errors.c'; else $(CYGPATH_W) '$(srcdir)/errors.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-errors.Tpo $(DEPDIR)/apgbfm-errors.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='errors.c' object='apgbfm-errors.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-errors.obj `if test -f 'errors.c'; then $(CYGPATH_W) 'errors.c'; else $(CYGPATH_W) '$(srcdir)/errors.c'; fi`
+
+apgbfm-getopt.o: getopt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-getopt.o -MD -MP -MF $(DEPDIR)/apgbfm-getopt.Tpo -c -o apgbfm-getopt.o `test -f 'getopt.c' || echo '$(srcdir)/'`getopt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-getopt.Tpo $(DEPDIR)/apgbfm-getopt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='getopt.c' object='apgbfm-getopt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-getopt.o `test -f 'getopt.c' || echo '$(srcdir)/'`getopt.c
+
+apgbfm-getopt.obj: getopt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-getopt.obj -MD -MP -MF $(DEPDIR)/apgbfm-getopt.Tpo -c -o apgbfm-getopt.obj `if test -f 'getopt.c'; then $(CYGPATH_W) 'getopt.c'; else $(CYGPATH_W) '$(srcdir)/getopt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-getopt.Tpo $(DEPDIR)/apgbfm-getopt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='getopt.c' object='apgbfm-getopt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-getopt.obj `if test -f 'getopt.c'; then $(CYGPATH_W) 'getopt.c'; else $(CYGPATH_W) '$(srcdir)/getopt.c'; fi`
+
+apgbfm-convert.o: convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-convert.o -MD -MP -MF $(DEPDIR)/apgbfm-convert.Tpo -c -o apgbfm-convert.o `test -f 'convert.c' || echo '$(srcdir)/'`convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-convert.Tpo $(DEPDIR)/apgbfm-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='convert.c' object='apgbfm-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-convert.o `test -f 'convert.c' || echo '$(srcdir)/'`convert.c
+
+apgbfm-convert.obj: convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgbfm-convert.obj -MD -MP -MF $(DEPDIR)/apgbfm-convert.Tpo -c -o apgbfm-convert.obj `if test -f 'convert.c'; then $(CYGPATH_W) 'convert.c'; else $(CYGPATH_W) '$(srcdir)/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/apgbfm-convert.Tpo $(DEPDIR)/apgbfm-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='convert.c' object='apgbfm-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgbfm_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o apgbfm-convert.obj `if test -f 'convert.c'; then $(CYGPATH_W) 'convert.c'; else $(CYGPATH_W) '$(srcdir)/convert.c'; fi`
 
 apgd-bloom.o: bloom.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(apgd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT apgd-bloom.o -MD -MP -MF $(DEPDIR)/apgd-bloom.Tpo -c -o apgd-bloom.o `test -f 'bloom.c' || echo '$(srcdir)/'`bloom.c

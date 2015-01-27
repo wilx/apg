@@ -3,7 +3,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include \
 
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = apg apgd
+bin_PROGRAMS = apg apgd apgbfm
 
 common_apg_sources = \
         bloom.c \
@@ -22,4 +22,7 @@ apg_SOURCES = $(common_apg_sources)
 
 apgd_SOURCES = $(common_apg_sources)
 apgd_CPPFLAGS = -DCLISERV
+
+apgbfm_SOURCES = apgbfm.c bloom.c sha/sha.c errors.c getopt.c convert.c
+apgbfm_CPPFLAGS = -DAPGBFM
 
