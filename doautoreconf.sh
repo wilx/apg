@@ -23,4 +23,5 @@ $LIBTOOLIZE -vcif
 $ACLOCAL -I m4 --install -Wall --force
 $AUTOMAKE -vcaf
 $AUTOCONF -I m4 -f -Wall
+$AUTOHEADER -f -I bfconvert -I cast -I perl -I php -I sha
 #$AUTOM4TE --language=Autotest -I tests tests/testsuite.at -o tests/testsuite
