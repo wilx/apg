@@ -14,6 +14,7 @@ AC_PROG_AWK
 AC_PROG_INSTALL
 
 AC_PROG_CC_C99
+AC_USE_SYSTEM_EXTENSIONS
 AX_COMPILER_VENDOR
 
 AS_CASE([$ax_cv_c_compiler_vendor],
@@ -24,9 +25,9 @@ AS_CASE([$ax_cv_c_compiler_vendor],
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lcrypt':
-AC_CHECK_LIB([crypt], [main])
+AC_CHECK_LIB([crypt], [crypt])
 # FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [main])
+AC_CHECK_LIB([m], [sin])
 
 # Checks for header files.
 
