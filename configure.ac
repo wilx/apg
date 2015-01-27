@@ -25,9 +25,9 @@ AS_CASE([$ax_cv_c_compiler_vendor],
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lcrypt':
-AC_CHECK_LIB([crypt], [crypt])
+AC_SEARCH_LIBS([crypt], [crypt])
 # FIXME: Replace `main' with a function in `-lm':
-AC_CHECK_LIB([m], [sin])
+AC_SEARCH_LIBS([sin], [m])
 
 # Checks for header files.
 
