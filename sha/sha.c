@@ -15,46 +15,60 @@
 #if defined (HAVE_CONFIG_H)
 #include "config.h"
 #endif
+#include <stdint.h>
 #include <string.h>
 #include "sha.h"
 
 /* The SHA f()-functions */
 
-#define f1(x,y,z)   ( ( x & y ) | ( ~x & z ) )              /* Rounds  0-19 */
-#define f2(x,y,z)   ( x ^ y ^ z )                           /* Rounds 20-39 */
-#define f3(x,y,z)   ( ( x & y ) | ( x & z ) | ( y & z ) )   /* Rounds 40-59 */
-#define f4(x,y,z)   ( x ^ y ^ z )                           /* Rounds 60-79 */
+/* Rounds  0-19 */
+#define f1(x,y,z)   ( ( (x) & (y) ) | ( ~(x) & (z) ) )
+/* Rounds 20-39 */
+#define f2(x,y,z)   ( (x) ^ (y) ^ (z) )
+/* Rounds 40-59 */
+#define f3(x,y,z)   ( ( (x) & (y) ) | ( (x) & (z) ) | ( (y) & (z) ) )
+/* Rounds 60-79 */
+#define f4(x,y,z)   ( (x) ^ (y) ^ (z) )
 
 /* The SHA Mysterious Constants */
 
-#define K1  0x5A827999L     /* Rounds  0-19 */
-#define K2  0x6ED9EBA1L     /* Rounds 20-39 */
-#define K3  0x8F1BBCDCL     /* Rounds 40-59 */
-#define K4  0xCA62C1D6L     /* Rounds 60-79 */
+#define K1  UINT32_C(0x5A827999)     /* Rounds  0-19 */
+#define K2  UINT32_C(0x6ED9EBA1)     /* Rounds 20-39 */
+#define K3  UINT32_C(0x8F1BBCDC)     /* Rounds 40-59 */
+#define K4  UINT32_C(0xCA62C1D6)     /* Rounds 60-79 */
 
 /* SHA initial values */
 
-#define h0init  0x67452301L
-#define h1init  0xEFCDAB89L
-#define h2init  0x98BADCFEL
-#define h3init  0x10325476L
-#define h4init  0xC3D2E1F0L
+#define h0init  UINT32_C(0x67452301)
+#define h1init  UINT32_C(0xEFCDAB89)
+#define h2init  UINT32_C(0x98BADCFE)
+#define h3init  UINT32_C(0x10325476)
+#define h4init  UINT32_C(0xC3D2E1F0)
 
 /* 32-bit rotate - kludged with shifts */
 
-typedef unsigned long UL ;	/* to save space */
+typedef uint32_t UL ;	/* to save space */
 
-#define S(n,X)  ( ( ((UL)X) << n ) | ( ((UL)X) >> ( 32 - n ) ) )
+#define S(n,X)  ( ( ((UL)(X)) << (n) ) | ( ((UL)(X)) >> ( 32 - (n) ) ) )
 
 /* The initial expanding function */
 
-#define expand(count)   W[ count ] = S(1,(W[ count - 3 ] ^ W[ count - 8 ] ^ W[ count - 14 ] ^ W[ count - 16 ]))	/* to make this SHA-1 */
+#define expand1(count)   W[ (count) ]                           \
+  = S(1,(W[ (count) - 3 ]                                       \
+         ^ W[ (count) - 8 ]                                     \
+         ^ W[ (count) - 14 ]                                    \
+         ^ W[ (count) - 16 ]))	/* to make this SHA-1 */
+#define expand2(count)   W[ (count) ]                           \
+  = S(2,(W[ (count) - 6 ]                                       \
+         ^ W[ (count) - 16 ]                                    \
+         ^ W[ (count) - 28 ]                                    \
+         ^ W[ (count) - 32 ]))	/* to make this SHA-1 */
 
 /* The four SHA sub-rounds */
 
 #define subRound1(count)    \
 { \
-    temp = S( 5, A ) + f1( B, C, D ) + E + W[ count ] + K1; \
+    LONG temp = S( 5, A ) + f1( B, C, D ) + E + W[ count ] + K1; \
     E = D; \
     D = C; \
     C = S( 30, B ); \
@@ -64,7 +78,7 @@ typedef unsigned long UL ;	/* to save space */
 
 #define subRound2(count)    \
 { \
-    temp = S( 5, A ) + f2( B, C, D ) + E + W[ count ] + K2; \
+    LONG temp = S( 5, A ) + f2( B, C, D ) + E + W[ count ] + K2; \
     E = D; \
     D = C; \
     C = S( 30, B ); \
@@ -74,7 +88,7 @@ typedef unsigned long UL ;	/* to save space */
 
 #define subRound3(count)    \
 { \
-    temp = S( 5, A ) + f3( B, C, D ) + E + W[ count ] + K3; \
+    LONG temp = S( 5, A ) + f3( B, C, D ) + E + W[ count ] + K3; \
     E = D; \
     D = C; \
     C = S( 30, B ); \
@@ -84,18 +98,13 @@ typedef unsigned long UL ;	/* to save space */
 
 #define subRound4(count)    \
 { \
-    temp = S( 5, A ) + f4( B, C, D ) + E + W[ count ] + K4; \
+    LONG temp = S( 5, A ) + f4( B, C, D ) + E + W[ count ] + K4; \
     E = D; \
     D = C; \
     C = S( 30, B ); \
     B = A; \
     A = temp; \
 }
-
-/* The two buffers of 5 32-bit words */
-
-LONG h0, h1, h2, h3, h4;
-LONG A, B, C, D, E;
 
 /***************************************************************************/
 /* apg_shaInit								   */
@@ -125,34 +134,26 @@ void apg_shaInit( apg_SHA_INFO *shaInfo )
 
 static void shaTransform( apg_SHA_INFO *shaInfo )
 {
-  LONG W[ 80 ], temp;
-  int i;
+  LONG W[ 80 ];
 
   /* Step A.  Copy the data buffer into the local work buffer */
-  for( i = 0; i < 16; i++ )
+  for(int i = 0; i < 16; i++ )
     W[ i ] = shaInfo->data[ i ];
 
   /* Step B.  Expand the 16 words into 64 temporary data words */
-  expand( 16 ); expand( 17 ); expand( 18 ); expand( 19 ); expand( 20 );
-  expand( 21 ); expand( 22 ); expand( 23 ); expand( 24 ); expand( 25 );
-  expand( 26 ); expand( 27 ); expand( 28 ); expand( 29 ); expand( 30 );
-  expand( 31 ); expand( 32 ); expand( 33 ); expand( 34 ); expand( 35 );
-  expand( 36 ); expand( 37 ); expand( 38 ); expand( 39 ); expand( 40 );
-  expand( 41 ); expand( 42 ); expand( 43 ); expand( 44 ); expand( 45 );
-  expand( 46 ); expand( 47 ); expand( 48 ); expand( 49 ); expand( 50 );
-  expand( 51 ); expand( 52 ); expand( 53 ); expand( 54 ); expand( 55 );
-  expand( 56 ); expand( 57 ); expand( 58 ); expand( 59 ); expand( 60 );
-  expand( 61 ); expand( 62 ); expand( 63 ); expand( 64 ); expand( 65 );
-  expand( 66 ); expand( 67 ); expand( 68 ); expand( 69 ); expand( 70 );
-  expand( 71 ); expand( 72 ); expand( 73 ); expand( 74 ); expand( 75 );
-  expand( 76 ); expand( 77 ); expand( 78 ); expand( 79 );
+  expand1( 16 ); expand1( 17 ); expand1( 18 ); expand1( 19 ); expand1( 20 );
+  expand1( 21 ); expand1( 22 ); expand1( 23 ); expand1( 24 ); expand1( 25 );
+  expand1( 26 ); expand1( 27 ); expand1( 28 ); expand1( 29 ); expand1( 30 );
+  expand1( 31 );
+  for (int i = 32; i <= 79; ++i)
+    expand2 (i);
 
   /* Step C.  Set up first buffer */
-  A = shaInfo->digest[ 0 ];
-  B = shaInfo->digest[ 1 ];
-  C = shaInfo->digest[ 2 ];
-  D = shaInfo->digest[ 3 ];
-  E = shaInfo->digest[ 4 ];
+  LONG A = shaInfo->digest[ 0 ];
+  LONG B = shaInfo->digest[ 1 ];
+  LONG C = shaInfo->digest[ 2 ];
+  LONG D = shaInfo->digest[ 3 ];
+  LONG E = shaInfo->digest[ 4 ];
 
   /* Step D.  Serious mangling, divided into four sub-rounds */
   subRound1( 0 ); subRound1( 1 ); subRound1( 2 ); subRound1( 3 );
@@ -211,7 +212,7 @@ static void byteReverse( LONG *buffer, int byteCount )
 #endif /* APG_LITTLE_ENDIAN */
 
 /***************************************************************************/
-/* apg_shaUpdate								   */
+/* apg_shaUpdate							   */
 /*									   */
 /* Update SHA for a block of data.					   */
 /* Use any data already in the SHA_INFO structure and leave any partial	   */
