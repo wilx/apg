@@ -74,15 +74,15 @@ main (int argc, char *argv[])
  f_mode flt_mode = 0x00; /* filter mode                         */
 
  /* flags */
- flag add_word_flag         = FALSE; /* -a */
- flag add_file_flag         = FALSE; /* -A */
- flag check_word_flag       = FALSE; /* -c */
- flag check_file_flag       = FALSE; /* -C */
- flag new_flag              = FALSE; /* -n */
- flag new_from_dict_flag    = FALSE; /* -d */
- flag filter_flag           = FALSE; /* -f */
- flag silent_flag           = FALSE; /* -q */
- flag case_insensitive_flag = FALSE; /* -q */
+ flag add_word_flag         = false; /* -a */
+ flag add_file_flag         = false; /* -A */
+ flag check_word_flag       = false; /* -c */
+ flag check_file_flag       = false; /* -C */
+ flag new_flag              = false; /* -n */
+ flag new_from_dict_flag    = false; /* -d */
+ flag filter_flag           = false; /* -f */
+ flag silent_flag           = false; /* -q */
+ flag case_insensitive_flag = false; /* -q */
  /* end of flags section */
 
  /* Analize options */
@@ -98,38 +98,38 @@ main (int argc, char *argv[])
       {
        case 'a':
          word = apg_optarg;
-         add_word_flag = TRUE;
+         add_word_flag = true;
          dummy_test = dummy_test + 2;
          break;
        case 'A':
          dictfile = apg_optarg;
-         add_file_flag = TRUE;
+         add_file_flag = true;
          dummy_test = dummy_test + 2;
          break;
        case 'c':
          word = apg_optarg;
-         check_word_flag = TRUE;
+         check_word_flag = true;
          dummy_test = dummy_test + 2;
          break;
        case 'C':
          dictfile = apg_optarg;
-         check_file_flag = TRUE;
+         check_file_flag = true;
          dummy_test = dummy_test + 2;
          break;
        case 'n':
          checkopt(apg_optarg);
          wc = atoi(apg_optarg);
-         new_flag = TRUE;
+         new_flag = true;
          dummy_test = dummy_test + 2;
          break;
        case 'd':
          dictfile = apg_optarg;
-         new_from_dict_flag = TRUE;
+         new_from_dict_flag = true;
          dummy_test = dummy_test + 2;
          break;
        case 'f':
          filter = apg_optarg;
-         filter_flag = TRUE;
+         filter_flag = true;
          dummy_test = dummy_test + 1;
          break;
        case 'h':
@@ -144,22 +144,22 @@ main (int argc, char *argv[])
          print_filter_info(apg_optarg);
          return (0);
        case 'q':
-         silent_flag = TRUE;
+         silent_flag = true;
          break;
        case 's':
          flt_mode = flt_mode | BF_CASE_INSENSITIVE;
-         case_insensitive_flag = TRUE;
+         case_insensitive_flag = true;
          break;
        default:
          print_help();
          exit(-1);
       }
    }
- if (filter_flag != TRUE) err_app_fatal ("apg", "-f option is required");
+ if (filter_flag != true) err_app_fatal ("apg", "-f option is required");
  if (dummy_test != 3) err_app_fatal ("apg", "too many options");
  /* Main part */
  /* At this point we can be sure that all options a correct */
- if (add_word_flag == TRUE) /* -a word */
+ if (add_word_flag == true) /* -a word */
     {
      if ( (f_filter = open_filter(filter, "r+")) == NULL)
         err_sys_fatal("open_filter");
@@ -168,11 +168,11 @@ main (int argc, char *argv[])
      if (filter_size == 0) err_sys_fatal("get_filtersize");
      if ( insert_word (word, f_filter, filter_size, flt_mode) == -1)
             err_sys_fatal("insert_word");
-     if (silent_flag != TRUE)
+     if (silent_flag != true)
         printf ("Word %s added\n",word);
      return (0);
     }
- if (add_file_flag == TRUE) /* -A dictfile */
+ if (add_file_flag == true) /* -A dictfile */
     {
      word = (char *) calloc(1,MAX_DICT_STRLEN);
      if ( (f_dictfile = fopen(dictfile,"r")) == NULL)
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
          if ( insert_word (word, f_filter, filter_size, flt_mode) == -1)
             err_sys_fatal("insert_word");
          i++;
-         if (silent_flag != TRUE)
+         if (silent_flag != true)
             {
              if ( i % 100 == 0)
                 {
@@ -201,13 +201,13 @@ main (int argc, char *argv[])
             }
          (void)memset((void *)word, 0, MAX_DICT_STRLEN);
         }
-     if (silent_flag != TRUE) printf ("\n");
+     if (silent_flag != true) printf ("\n");
      free ( (void *)word);
      fclose (f_dictfile);
      close_filter (f_filter);
      return (0);
     }
- if (check_word_flag == TRUE) /* -c word */
+ if (check_word_flag == true) /* -c word */
     {
      if ( (f_filter = open_filter(filter, "r")) == NULL)
         err_sys_fatal("open_filter");
@@ -229,7 +229,7 @@ main (int argc, char *argv[])
         }
      return (0);
     }
- if (check_file_flag == TRUE) /* -C dictfile */
+ if (check_file_flag == true) /* -C dictfile */
     {
      word = (char *) calloc(1,MAX_DICT_STRLEN);
      if ( (f_dictfile = fopen(dictfile,"r")) == NULL)
@@ -267,19 +267,19 @@ main (int argc, char *argv[])
      close_filter (f_filter);
      return (0);
     }
- if (new_flag == TRUE) /* -n nwords */
+ if (new_flag == true) /* -n nwords */
     {
      if ((f_filter = create_filter(filter, wc, flt_mode)) == NULL)
          err_sys_fatal("create_filter");
      close_filter(f_filter);
      return (0);
     }
- if (new_from_dict_flag == TRUE) /* -d dictfile */
+ if (new_from_dict_flag == true) /* -d dictfile */
     {
      word = (char *) calloc(1,MAX_DICT_STRLEN);
      if ( (f_dictfile = fopen(dictfile,"r")) == NULL)
         err_sys_fatal("fopen");
-     if (silent_flag != TRUE)
+     if (silent_flag != true)
         {
          fprintf (stdout,"Counting words in dictionary. Please wait...\n");
          fflush (stdout);
@@ -304,7 +304,7 @@ main (int argc, char *argv[])
          if ( insert_word (word, f_filter, filter_size, flt_mode) == -1)
             err_sys_fatal("insert_word");
          i++;
-         if (silent_flag != TRUE)
+         if (silent_flag != true)
             {
              if ( i % 100 == 0)
                 {
@@ -314,7 +314,7 @@ main (int argc, char *argv[])
             }
          (void)memset((void *)word, 0, MAX_DICT_STRLEN);
         }
-     if (silent_flag != TRUE) printf ("\n");
+     if (silent_flag != true) printf ("\n");
      free ( (void *)word);
      fclose (f_dictfile);
      close_filter (f_filter);

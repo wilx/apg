@@ -5,15 +5,15 @@
 ** Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions
 ** are met:
-** 
+**
 **     1.Redistributions of source code must retain the above copyright notice,
-**       this list of conditions and the following disclaimer. 
+**       this list of conditions and the following disclaimer.
 **     2.Redistributions in binary form must reproduce the above copyright
 **       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution. 
+**       documentation and/or other materials provided with the distribution.
 **     3.The name of the author may not be used to endorse or promote products
-**       derived from this software without specific prior written permission. 
-** 		  
+**       derived from this software without specific prior written permission.
+**
 ** THIS SOFTWARE IS PROVIDED BY THE AUTHOR  ``AS IS'' AND ANY EXPRESS
 ** OR IMPLIED WARRANTIES, INCLUDING,  BUT NOT LIMITED TO, THE IMPLIED
 ** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,6 +35,8 @@
 #ifndef APG_BLOOM_H
 #define APG_BLOOM_H 1
 
+#include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,14 +62,11 @@
 
 #define APGBFHDRSIZE      13
 
-#define TRUE              1
-#define FALSE             0
-
 #define MAX_DICT_STRLEN   255
 #define H_NUM   5
 
-typedef unsigned long int      h_val; /* should be 32-bit */
-typedef unsigned short int     flag;
+typedef uint32_t               h_val; /* should be 32-bit */
+typedef bool                   flag;
 typedef unsigned char          f_mode;
 
 struct apg_bf_hdr {
@@ -79,11 +78,11 @@ struct apg_bf_hdr {
 
 extern int insert_word(char *word, FILE *file, h_val filter_size, f_mode mode);
 extern int check_word(char *word, FILE *file, h_val filter_size, f_mode mode);
-extern FILE * create_filter(char * f_name, unsigned long int n_words, f_mode mode); 
-extern FILE * open_filter(char * f_name, const char *mode); 
+extern FILE * create_filter(char * f_name, unsigned long int n_words, f_mode mode);
+extern FILE * open_filter(char * f_name, const char *mode);
 extern int close_filter(FILE *f_dsk);
-extern h_val get_filtersize(FILE *f); 
-extern f_mode get_filtermode(FILE *f); 
+extern h_val get_filtersize(FILE *f);
+extern f_mode get_filtermode(FILE *f);
 extern h_val count_words(FILE *dict_file);
 #ifdef APGBFM
 extern int print_flt_info(FILE * filter);
