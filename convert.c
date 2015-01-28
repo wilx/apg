@@ -48,19 +48,21 @@
 */
 
 /* small letters */
-char let[26] =
+static const char let[26] =
  {
  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
  'u', 'v', 'w', 'x', 'w', 'z'
  };
+#ifndef APGBFM
 /* capital letters */
-char clet[26] =
+static const char clet[26] =
  {
  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
  'U', 'V', 'W', 'X', 'W', 'Z'
   };
+#endif
 
 /*
 ** FUNCTIONS
@@ -186,7 +188,7 @@ symb2name(char * syllable, char * h_syllable)
    char symbol;
    char *name;
   };
- static struct ssymb_names ssn[42] =
+ static const struct ssymb_names ssn[42] =
   {
    {'1',"ONE"},
    {'2',"TWO"},
@@ -268,7 +270,7 @@ spell_word(char * word, char * spelled_word)
    char symbol;
    char *name;
   };
- static struct char_spell cs[94] =
+ static const struct char_spell cs[94] =
   {
    {'1',"ONE"              },
    {'2',"TWO"              },
