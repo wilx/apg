@@ -29,7 +29,7 @@ typedef uint32_t   LONG ;
 
 typedef struct {
   LONG digest[ 5 ] ;            /* Message digest */
-  LONG countLo, countHi ;       /* 64-bit bit count */
+  uint64_t count ;              /* 64-bit bit count */
   LONG data[ 16 ] ;             /* SHA data buffer */
   LONG slop ;			/* # of bytes saved in data[] */
 } apg_SHA_INFO ;

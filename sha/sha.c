@@ -122,7 +122,7 @@ void apg_shaInit( apg_SHA_INFO *shaInfo )
   shaInfo->digest[ 4 ] = h4init;
 
   /* Initialise bit count */
-  shaInfo->countLo = shaInfo->countHi = 0L;
+  shaInfo->count = 0;
   shaInfo->slop = 0 ;		/* no data saved yet in data[] */
 } /* apg_shaInit */
 
@@ -226,10 +226,7 @@ void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count )
   db = (BYTE *) &(shaInfo->data[0]) ;
 
   /* Update bitcount */
-  if( ( shaInfo->countLo + ( ( LONG ) count << 3 ) ) < shaInfo->countLo )
-    shaInfo->countHi++; /* Carry from low to high bitCount */
-  shaInfo->countLo += ( ( LONG ) count << 3 );
-  shaInfo->countHi += ( ( LONG ) count >> 29 );
+  shaInfo->count += count * 8;
 
   /* Process data in SHA_BLOCKSIZE chunks */
   while ( count-- > 0 )
@@ -257,11 +254,11 @@ void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count )
 
 void apg_shaFinal( apg_SHA_INFO *shaInfo, BYTE hash[SHA_DIGESTSIZE] )
 {
-  int count;
-  LONG lowBitcount = shaInfo->countLo, highBitcount = shaInfo->countHi;
+  LONG const lowBitcount = shaInfo->count & 0xFFFFFFFF;
+  LONG const highBitcount = shaInfo->count >> 32;
 
   /* Compute number of bytes mod 64 */
-  count = ( int ) ( ( shaInfo->countLo >> 3 ) & 0x3F );
+  int count = ( int ) ( ( shaInfo->count >> 3 ) & 0x3F );
 
   /* Set the first char of padding to 0x80.  This is safe since there is
      always at least one byte free */
