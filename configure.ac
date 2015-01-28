@@ -27,7 +27,7 @@ AS_CASE([$ax_cv_c_compiler_vendor],
 
 AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h strings.h])
 AC_CHECK_HEADERS([sys/socket.h sys/time.h syslog.h unistd.h])
-AC_CHECK_HEADERS([crypt.h])
+AC_CHECK_HEADERS([crypt.h pwd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
