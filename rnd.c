@@ -41,11 +41,8 @@
 #include <sys/time.h>
 #include "rnd.h"
 
-#ifndef APG_USE_SHA
-#  include "./cast/cast.h"
-#else /* APG_USE_SHA */
-#  include "./sha/sha.h"
-#endif /* APG_USE_SHA */
+#include "cast/cast.h"
+#include "sha/sha.h"
 
 UINT32 __rnd_seed[2]; /* Random Seed 2*32=64 */
 
@@ -68,7 +65,6 @@ randint(int n)
 #endif /* APG_USE_SHA */
 }
 
-#ifndef APG_USE_SHA
 /*
 ** ANSI X9.17 pseudorandom generator that uses CAST algorithm instead of DES
 ** m = 1
@@ -97,7 +93,8 @@ x917cast_rnd (void)
 * ENCRYPTION KEY HEX : 0x000102030405060708090A0B0C0D0E0F (128-bit)   *
 * YOU CAN CHANGE IT IF YOU WANT                                       *
 **********************************************************************/
-u8 ro_key[16] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+static const u8 ro_key[16] = {
+0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
 /**********************************************************************
 * ENCRYPTION KEY HEX : 0x000102030405060708090A0B0C0D0E0F (128-bit)   *
@@ -119,7 +116,7 @@ u8 ro_key[16] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
  cast_encrypt (&ky, (u8 *)&Xi_plus_I[0], (u8*)&__rnd_seed[0]); /* s=Ek( Xi (+) I ) */
  return (Xi[0]);
 }
-#else /* APG_USE_SHA */
+
 /*
 ** ANSI X9.17 pseudorandom generator that uses SHA1 algorithm instead of DES
 ** m=1
@@ -174,7 +171,7 @@ x917sha1_rnd (void)
          sizeof(__rnd_seed));                                  /* s=Ek( Xi (+) I ) */
  return (Xi[0]);
 }
-#endif /* APG_USE_SHA */
+
 /*
 ** x917_setseed (UINT32 seed) - Initializes seed
 ** INPUT:
