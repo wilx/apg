@@ -35,7 +35,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#if defined (HAVE_STRINGS_H)
 #include <strings.h>
 #endif
 #include <string.h>
