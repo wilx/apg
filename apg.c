@@ -47,11 +47,11 @@
 #define APG_VERSION "2.3.0b (PRNG: X9.17/SHA-1)"
 #endif /* APG_USE_SHA */
 
-#ifdef __NetBSD__
+#if defined(HAVE_UNISTD_H)
 #include <unistd.h>
 #endif
 
-#if defined(__sun) || defined(sun) || defined(linux) || defined(__linux) || defined(__linux__)
+#if defined(HAVE_CRYPT_H)
 #include <crypt.h>
 #endif
 
@@ -60,17 +60,9 @@
 #define DEFAULT_MAX_PASS_LEN 10
 #define DEFAULT_NUM_OF_PASS 6
 
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#endif
-
-#ifndef __NetBSD__
-#include <unistd.h>
-#endif
-
-#ifdef __CYGWIN__
-#undef APG_USE_CRYPT
-#endif /* __CYGWIN__ */
+#if defined (HAVE_CRYPT)
+#define APG_USE_CRYPT
+#endif /* HAVE_CRYPT */
 
 #ifdef CLISERV
 #include <sys/socket.h>

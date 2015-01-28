@@ -23,22 +23,22 @@ AS_CASE([$ax_cv_c_compiler_vendor],
     [sun], [],
     [AX_CFLAGS_WARN_ALL])
 
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lcrypt':
-AC_SEARCH_LIBS([crypt], [crypt])
-# FIXME: Replace `main' with a function in `-lm':
-AC_SEARCH_LIBS([sin], [m])
-
 # Checks for header files.
 
 AC_CHECK_HEADERS([arpa/inet.h netinet/in.h stdlib.h string.h strings.h])
 AC_CHECK_HEADERS([sys/socket.h sys/time.h syslog.h unistd.h])
+AC_CHECK_HEADERS([crypt.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 
+# Checks for libraries.
+AC_SEARCH_LIBS([crypt], [crypt])
+AC_SEARCH_LIBS([sin], [m])
+
 # Checks for library functions.
 AC_CHECK_FUNCS([getpass gettimeofday inet_ntoa memset strchr strerror])
+AC_CHECK_FUNCS([crypt])
 
 LT_PREREQ([2.4.2])
 LT_INIT([win32-dll disable-static pic-only])
