@@ -40,7 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+#if defined (HAVE_STRINGS_H)
 #include <strings.h>
 #endif /* WIN32 */
 #include <time.h>
