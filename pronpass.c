@@ -56,7 +56,7 @@ struct unit
     USHORT  flags;
 };
 
-static struct unit  rules[] =
+static const struct unit  rules[] =
 {   {"a", VOWEL},
     {"b", NO_SPECIAL_RULE},
     {"c", NO_SPECIAL_RULE},
@@ -93,7 +93,7 @@ static struct unit  rules[] =
     {"ck", NOT_BEGIN_SYLLABLE}
 };
 
-static int  digram[][RULE_SIZE] =
+static const int  digram[][RULE_SIZE] =
 {
     {/* aa */ ILLEGAL_PAIR,
      /* ab */ ANY_COMBINATION,
@@ -2187,7 +2187,7 @@ illegal_placement (USHORT *units, USHORT pwlen)
  * in this procedure without affecting the digram table or any other
  * programs using the Random_word subroutine.
  */
-static USHORT numbers[] =
+static const USHORT numbers[] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 1, 1, 1,
@@ -2236,7 +2236,7 @@ static USHORT numbers[] =
  * use vowel_numbers will adjust to the size difference
 automatically.
  */
-static USHORT vowel_numbers[] =
+static const USHORT vowel_numbers[] =
 {
     0, 0, 4, 4, 4, 8, 8, 14, 14, 19, 19, 23
 };
