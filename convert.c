@@ -81,13 +81,12 @@ static const char clet[26] =
 void
 decapitalize (char *word)
 {
- int i = 0; /* counter */
- int j = 0; /* counter */
  int str_len = strlen(word);
- for(j = 0; j < str_len; j++)
-  for(i=0; i < 26; i++)
-   if(word[j] == clet[i])
-       word[j] = let[i];
+ for(int j = 0; j < str_len; ++j) {
+   const char ch = word[j];
+   if ('A' <= ch && ch <= 'Z')
+     word[j] = let[ch - 'A'];
+ }
 }
 
 #ifndef APGBFM
@@ -372,17 +371,19 @@ spell_word(char * word, char * spelled_word)
   int j = 0;
   int word_len = strlen(word);
   char * tmp_ptr;
-  char hyphen = '-';
-  char zero   = 0x00;
+  const char hyphen = '-';
 
   /* Count the length of the spelled word */
-  for (i=0; i <= word_len; i++)
-   for (j=0; j < 94; j++)
-    if (word[i] == cs[j].symbol)
-     {
-      s_length = s_length + strlen(cs[j].name) + 1;
-      continue;
-     }
+  for (i=0; i <= word_len; i++) {
+    for (j=0; j < 94; j++) {
+      if (word[i] == cs[j].symbol)
+        {
+          s_length = s_length + strlen(cs[j].name) + 1;
+          goto next_char;
+        }
+    }
+  next_char:;
+  }
 
   /* Allocate memory for spelled word */
   if ( (spelled_word = (char *)calloc(1, (size_t)s_length)) == NULL)
@@ -391,21 +392,24 @@ spell_word(char * word, char * spelled_word)
   /* Construct spelled word */
   tmp_ptr = spelled_word;
 
-  for (i=0; i < word_len; i++)
-   for (j=0; j < 94; j++)
-    if (word[i] == cs[j].symbol)
-     {
-      (void) memcpy((void *)tmp_ptr, (void *)cs[j].name, strlen(cs[j].name));
-      tmp_ptr = tmp_ptr + strlen(cs[j].name);
-      /* Place the hyphen after each symbol */
-      (void) memcpy((void *)(tmp_ptr), (void *)&hyphen, 1);
-      tmp_ptr = tmp_ptr + 1;
-      continue;
-     }
+  for (i=0; i < word_len; i++) {
+    for (j=0; j < 94; j++) {
+      if (word[i] == cs[j].symbol)
+        {
+          (void) memcpy((void *)tmp_ptr, (void *)cs[j].name, strlen(cs[j].name));
+          tmp_ptr = tmp_ptr + strlen(cs[j].name);
+          /* Place the hyphen after each symbol */
+          (void) memcpy((void *)(tmp_ptr), (void *)&hyphen, 1);
+          tmp_ptr = tmp_ptr + 1;
+          goto next_char_2;
+        }
+    }
+  next_char_2:;
+  }
 
   /* Remove hyphen at the end of the word */
   tmp_ptr = tmp_ptr - 1;
-  (void) memcpy((void *)(tmp_ptr), (void *)&zero, 1);
+  *tmp_ptr = 0;
 
   return (spelled_word);
 }
