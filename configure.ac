@@ -35,6 +35,8 @@ AC_TYPE_SIZE_T
 # Checks for libraries.
 AC_SEARCH_LIBS([crypt], [crypt])
 AC_SEARCH_LIBS([sin], [m])
+AC_SEARCH_LIBS([gethostbyname], [nsl network net])
+AC_SEARCH_LIBS([setsockopt], [socket network net])
 
 # Checks for library functions.
 AC_CHECK_FUNCS([getpass gettimeofday inet_ntoa memset strchr strerror])
