@@ -114,6 +114,7 @@ void print_help (void);
 int main (int argc, char *argv[]);
 void checkopt(const char *opt);
 int construct_mode(char *str_mode, struct pass_m * mde);
+long apg_write(int fd, const void * buf, size_t count);
 
 /*
 ** main()
@@ -413,8 +414,8 @@ main (int argc, char *argv[])
              snprintf(out_pass, max_pass_length*19 + 4, "%s (%s)", pass_string, hyph_pass_string);
             else
              snprintf(out_pass, max_pass_length*19 + 4, "%s", pass_string);
-            write (0, (void*) out_pass, strlen(out_pass));
-            write (0, (void*)&delim[0],2);
+            apg_write (0, (void*) out_pass, strlen(out_pass));
+            apg_write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
             i++;
             break;
@@ -453,8 +454,8 @@ main (int argc, char *argv[])
          snprintf(out_pass, max_pass_length*19 + 4, "%s (%s)", pass_string, hyph_pass_string);
         else
          snprintf(out_pass, max_pass_length*19 + 4, "%s", pass_string);
-        write (0, (void*) out_pass, strlen(out_pass));
-        write (0, (void*)&delim[0],2);
+        apg_write (0, (void*) out_pass, strlen(out_pass));
+        apg_write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
         i++;
        }
@@ -527,8 +528,8 @@ main (int argc, char *argv[])
                fprintf (stdout, "\n");
             fflush (stdout);
 #else /* CLISERV */
-            write (0, (void*)pass_string, strlen(pass_string));
-            write (0, (void*)&delim[0],2);
+            apg_write (0, (void*)pass_string, strlen(pass_string));
+            apg_write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
             i++;
             break;
@@ -562,8 +563,8 @@ main (int argc, char *argv[])
            fprintf (stdout, "\n");
         fflush (stdout);
 #else /* CLISERV */
-        write (0, (void*)pass_string, strlen(pass_string));
-        write (0, (void*)&delim[0],2);
+        apg_write (0, (void*)pass_string, strlen(pass_string));
+        apg_write (0, (void*)&delim[0],2);
 #endif /* CLISERV */
         i++;
        }
@@ -797,4 +798,14 @@ int construct_mode(char *s_mode, struct  pass_m * mde)
  mde->pass = mode;
  mde->filter = filter;
  return (0);
+}
+
+
+long apg_write(int fd, const void * buf, size_t count)
+{
+  long ret;
+  while ((ret = write (fd, buf, count)) == -1
+         && errno == EINTR)
+    ;
+  return ret;
 }
