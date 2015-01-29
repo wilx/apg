@@ -478,7 +478,7 @@ main (int argc, char *argv[])
      /***************************************
      ** ALGORITHM = 1 RESTRICTIONS = PRESENT
      ****************************************/
-     if ( (restrictions_present == TRUE))
+     if (restrictions_present == TRUE)
        {
         /* Filter check */
         if (filter_restrict_present == TRUE)
