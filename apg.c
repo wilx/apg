@@ -112,7 +112,7 @@ void print_help (void);
 #endif /* CLISERV */
 
 int main (int argc, char *argv[]);
-void checkopt(char *opt);
+void checkopt(const char *opt);
 int construct_mode(char *str_mode, struct pass_m * mde);
 
 /*
@@ -140,8 +140,8 @@ main (int argc, char *argv[])
  int exclude_list_present = FALSE;       /* exclude list present            */
  int quiet_present = FALSE;              /* quiet mode flag                 */
  int hyph_req_present = FALSE;           /* Request to print hyphenated password              */
- char *restrictions_file;                /* dictionary file name            */
- char *plain_restrictions_file;          /* dictionary file name            */
+ char *restrictions_file = NULL;         /* dictionary file name            */
+ char *plain_restrictions_file = NULL;   /* dictionary file name            */
  struct pass_m mode;
  unsigned int pass_mode_present = FALSE; /* password generation mode flag   */
  USHORT min_pass_length = DEFAULT_MIN_PASS_LEN;             /* min password length             */
@@ -157,11 +157,11 @@ main (int argc, char *argv[])
 #endif /* APG_USE_CRACKLIB*/
 #ifndef CLISERV
  char *com_line_seq;
- char *spell_pass_string;
+ char *spell_pass_string = NULL;
  int spell_present = FALSE;              /* spell password mode flag        */
  unsigned int delimiter_flag_present = FALSE;
 #ifdef APG_USE_CRYPT
- char *crypt_string;
+ char *crypt_string = NULL;
  unsigned int show_crypt_text = FALSE;   /* display crypt(3)'d text flag    */
 #endif /* APG_USE_CRYPT */
 
@@ -721,11 +721,10 @@ char * crypt_passstring (const char *p)
 **   option should contain only numeral symbols.
 */
 void
-checkopt(char *opt)
+checkopt(char const *opt)
 {
- int i;
-
- for(i=0; i < strlen(opt);i++)
+ const size_t optlen = strlen(opt);
+ for(size_t i=0; i != optlen ;i++)
   if(opt[i] != '0' && opt[i] != '1' && opt[i] != '2' && opt[i] != '3' &&
      opt[i] != '4' && opt[i] != '5' && opt[i] != '6' && opt[i] != '7' &&
      opt[i] != '8' && opt[i] != '9')
