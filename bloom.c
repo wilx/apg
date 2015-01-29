@@ -376,17 +376,18 @@ count_words(FILE *dict_file)
 {
  h_val i = 0L; /* word counter */
  char *string; /* temp string holder */
- char *tmp;    /* just tmp char pointer and nothing more it has no memory assigned */
+
  if ((string = (char *) calloc(1,MAX_DICT_STRLEN)) == NULL)
     return(0);
  while ((fgets(string, MAX_DICT_STRLEN, dict_file) != NULL))
   {
-   tmp = (char *)strtok (string," \t\n\0");
+   char * tmp = (char *)strtok (string," \t\n\0");
    if (tmp != NULL) i++;
   }
+ free(string);
  if (fseek (dict_file, 0, SEEK_SET) == -1)
     return (0);
- free ((void *) string);
+
  return (i);
 }
 
