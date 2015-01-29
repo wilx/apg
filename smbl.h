@@ -28,7 +28,9 @@
 */
 #ifndef APG_SMBL_H
 #define APG_SMBL_H    1
-const struct sym smbl[94] =
+// This cannot be const because it is modified set_exclude_list() in
+// restrict.c.
+struct sym smbl[94] =
 {
  {'a', S_SL}, {'b', S_SL}, {'c', S_SL}, {'d', S_SL}, {'e', S_SL}, {'f', S_SL},
  {'g', S_SL}, {'h', S_SL}, {'i', S_SL}, {'j', S_SL}, {'k', S_SL}, {'l', S_SL},

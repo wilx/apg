@@ -303,6 +303,6 @@ int set_exclude_list(const char * char_string)
   return(-1);
  for(i=0; i < 94; i++)
   if ((strchr(char_string, smbl[i].ch)) != NULL)
-    smbl[i].type = smbl[i].type | S_RS;
+    smbl[i].type |= S_RS;
  return(0);
 }
