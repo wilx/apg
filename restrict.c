@@ -56,9 +56,6 @@ check_pass(char *pass, char *dict)
 {
  FILE *dct;
  char *string;
- char *tmp;
- if( (string = (char *) calloc(1,MAX_DICT_STRING_SIZE)) == NULL)
-   return(-1);
 
 #ifdef APG_DEBUG
  fprintf (stdout, "DEBUG> check_pass: ck pass: %s\n", pass);
@@ -70,23 +67,40 @@ check_pass(char *pass, char *dict)
  if ( (dct = fopen(dict,"r")) == NULL)
    return(-1);
 
- while ((fgets(string, MAX_DICT_STRING_SIZE, dct) != NULL))
+ if( (string = (char *) calloc(1,MAX_DICT_STRING_SIZE)) == NULL)
+   return(-1);
+
+ static const char seps[] = " \t\r\n";
+ size_t const pass_len = strlen (pass);
+
+ while (fgets(string, MAX_DICT_STRING_SIZE, dct) != NULL)
   {
-   tmp = strtok (string," \t\n\0");
-   if( tmp != NULL)
-     string = tmp;
-   else
-     continue;
-   if(strlen(string) != strlen(pass)) continue;
-   else if (strncmp(string, pass, strlen(pass)) == 0)
-    {
-     free ( (void *)string);
-     fclose (dct);
+    const size_t line_len = strlen (string);
+    char const * line_end = string + line_len;
+    char const * word = string;
+    while (word != line_end) {
+      char const * sep = strpbrk (word, seps);
+      if (sep == NULL)
+        sep = line_end;
+      else if (sep == word) {
+        word += strspn (word, seps);
+        continue;
+      }
+
+      size_t const word_len = sep - word;
+      if (pass_len == word_len
+          && strncmp(word, pass, word_len) == 0) {
+        free ( (void *)string);
+        fclose (dct);
 #ifdef APG_DEBUG
-     fprintf (stdout, "DEBUG> check_pass: password found in dictionary: %s\n", pass);
-     fflush (stdout);
+        fprintf (stdout, "DEBUG> check_pass: password found in dictionary: %s\n", pass);
+        fflush (stdout);
 #endif /* APG_DEBUG */
-     return (1);
+        return (1);
+      }
+
+      size_t const sep_len = strspn (sep, seps);
+      word = sep + sep_len;
     }
   }
  free ( (void *)string);
