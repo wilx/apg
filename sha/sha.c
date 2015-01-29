@@ -219,7 +219,7 @@ static void byteReverse( LONG *buffer, int byteCount )
 /* data block there.							   */
 /***************************************************************************/
 
-void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count )
+void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE const buffer[], int count )
 {
   BYTE *db ;
 
@@ -252,7 +252,7 @@ void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count )
 /* as a byte array.							   */
 /***************************************************************************/
 
-void apg_shaFinal( apg_SHA_INFO *shaInfo, BYTE hash[SHA_DIGESTSIZE] )
+void apg_shaFinal( apg_SHA_INFO *shaInfo, BYTE hash[static const SHA_DIGESTSIZE] )
 {
   LONG const lowBitcount = shaInfo->count & 0xFFFFFFFF;
   LONG const highBitcount = shaInfo->count >> 32;

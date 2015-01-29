@@ -35,7 +35,7 @@ typedef struct {
 } apg_SHA_INFO ;
 
 void apg_shaInit( apg_SHA_INFO *shaInfo ) ;
-void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE *buffer, int count ) ;
-void apg_shaFinal( apg_SHA_INFO *shaInfo, BYTE hash[SHA_DIGESTSIZE] ) ;
+void apg_shaUpdate( apg_SHA_INFO *shaInfo, BYTE const buffer[*], int count ) ;
+void apg_shaFinal( apg_SHA_INFO *shaInfo, BYTE hash[static const SHA_DIGESTSIZE] ) ;
 
 #endif /* _SHA_H_ */
