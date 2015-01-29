@@ -328,7 +328,6 @@ create_filter(char * f_name, unsigned long int n_words, f_mode mode)
 {
  FILE *f;
  char zero = 0x00;
- long int i = 0L;
  char etalon_bf_id[] = APGBF_ID;
  char etalon_bf_ver[] = APGBF_VERSION;
  struct apg_bf_hdr bf_hdr;
@@ -354,7 +353,7 @@ create_filter(char * f_name, unsigned long int n_words, f_mode mode)
     if (ferror (f) != 0)
        return(NULL);
 
- for (i = 0; i < FSIZE_BYTE(n_words); i++)
+ for (unsigned long i = 0; i < FSIZE_BYTE(n_words); i++)
    if ( fwrite ( (void *)&zero, 1, 1, f) < 1)
       if (ferror (f) != 0)
          return(NULL);
