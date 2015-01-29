@@ -237,7 +237,6 @@ cracklib_check_pass(char *pw, char *dictpath)
 int
 filter_check_pass(const char * word, unsigned int cond)
 {
- int i = 0;
  int sl_ret = 0;
  int cl_ret = 0;
  int nb_ret = 0;
@@ -249,25 +248,25 @@ filter_check_pass(const char * word, unsigned int cond)
 #endif /* APG_DEBUG */
 
  if ((cond & S_SS) > 0)
-    for (i=0; i < 94; i++)
+    for (int i=0; i < 94; i++)
        if ((smbl[i].type & S_SS) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
              ss_ret = 1;
- i = 0;
+
  if ((cond & S_SL) > 0)
-    for (i=0; i < 94; i++)
+    for (int i=0; i < 94; i++)
        if ((smbl[i].type & S_SL) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
              sl_ret = 1;
- i = 0;
+
  if ((cond & S_CL) > 0)
-    for (i=0; i < 94; i++)
+    for (int i=0; i < 94; i++)
        if ((smbl[i].type & S_CL) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
              cl_ret = 1;
- i = 0;
+
  if ((cond & S_NB) > 0)
-    for (i=0; i < 94; i++)
+    for (int i=0; i < 94; i++)
        if ((smbl[i].type & S_NB) > 0)
           if ((strchr(word,smbl[i].ch)) != NULL)
              nb_ret = 1;
