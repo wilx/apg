@@ -38,9 +38,6 @@
 #include "getopt.h"
 
 
-#define VERSION    "2.3.0b"
-
-
 #define FOUND "FOUND"
 #define NOT_FOUND "NOT FOUND"
 /*
@@ -50,7 +47,7 @@
 
 int main (int argc, char *argv[]);
 void print_help(void);
-void checkopt(char *opt);
+void checkopt(char const *opt);
 void print_filter_info(char * filter);
 
 int
@@ -58,13 +55,13 @@ main (int argc, char *argv[])
 {
  int option = 0;
 
- char *dictfile;         /* dictionary filename                 */
+ char *dictfile = NULL;  /* dictionary filename                 */
  FILE *f_dictfile;       /* dictionary file descriptor          */
 
- char *filter;           /* filter file name                    */
+ char *filter = NULL;    /* filter file name                    */
  FILE *f_filter;         /* filter file descriptor              */
 
- char *word;             /* word to add or check                */
+ char *word = NULL;      /* word to add or check                */
  char *tmp;              /* just tmp char pointer               */
  h_val wc = 0L;          /* amount of words to build dictionaty */
  h_val filter_size =0L;  /* filter size in bits                 */
@@ -82,7 +79,7 @@ main (int argc, char *argv[])
  flag new_from_dict_flag    = false; /* -d */
  flag filter_flag           = false; /* -f */
  flag silent_flag           = false; /* -q */
- flag case_insensitive_flag = false; /* -q */
+ flag case_insensitive_flag = false; /* -s */
  /* end of flags section */
 
  /* Analize options */
@@ -364,11 +361,10 @@ print_help(void)
 **   checks only is the option string numeral.
 */
 void
-checkopt(char *opt)
+checkopt(char const *opt)
 {
- int i;
-
- for(i=0; i < strlen(opt);i++)
+ const size_t optlen = strlen(opt);
+ for(size_t i=0; i < optlen; i++)
   if(opt[i] != '0' && opt[i] != '1' && opt[i] != '2' && opt[i] != '3' &&
      opt[i] != '4' && opt[i] != '5' && opt[i] != '6' && opt[i] != '7' &&
      opt[i] != '8' && opt[i] != '9')
