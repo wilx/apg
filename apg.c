@@ -28,7 +28,7 @@
 */
 
 /*
-** Main Module of apg programm
+** Main Module of apg program
 */
 #if defined (HAVE_CONFIG_H)
 #include "config.h"
@@ -130,7 +130,7 @@ main (int argc, char *argv[])
  time_t tme;
 
 
- int option = 0;                         /* programm option                 */
+ int option = 0;                         /* program option                 */
 
  int algorithm = 0;                      /* algorithm for generation        */
  int restrictions_present = FALSE;       /* restrictions flag               */

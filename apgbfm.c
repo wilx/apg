@@ -133,7 +133,7 @@ main (int argc, char *argv[])
          print_help();
          return (0);
        case 'v':
-         printf ("APG Bloom filter management programm");
+         printf ("APG Bloom filter management program");
          printf ("\nversion %s", VERSION);
          printf ("\nCopyright (c) 2001, 2002, 2003 Adel I. Mirzazhanov\n");
          return (0);
