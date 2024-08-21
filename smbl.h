@@ -28,6 +28,9 @@
 */
 #ifndef APG_SMBL_H
 #define APG_SMBL_H    1
+
+#include "randpass.h"
+
 // This cannot be const because it is modified set_exclude_list() in
 // restrict.c.
 struct sym smbl[94] =

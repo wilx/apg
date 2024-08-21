@@ -1,9 +1,13 @@
+#ifndef _CAST_SBOXES_H_
+#define _CAST_SBOXES_H_ 1
 /*
  *	CAST-128 in C
  *	Written by Steve Reid <sreid@sea-to-sky.net>
  *	100% Public Domain - no warranty
  *	Released 1997.10.11
  */
+
+#include "cast.h"
 
 static const u32 cast_sbox1[256] = {
 	0x30FB40D4, 0x9FA0FF0B, 0x6BECCD2F, 0x3F258C7A,
@@ -541,3 +545,4 @@ static const u32 cast_sbox8[256] = {
 	0x50B2AD80, 0xEAEE6801, 0x8DB2A283, 0xEA8BF59E
 };
 
+#endif // _CAST_SBOXES_H_
