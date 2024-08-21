@@ -193,6 +193,8 @@ x917_setseed (UINT32 seed, int quiet)
 
  if ( (dr = fopen(APG_DEVRANDOM, "r")) != NULL)
   {
+   // Avoid reading too many bytes from /dev/random.
+   setvbuf(dr, NULL, _IONBF, 0);
    (void)fread( (void *)&drs[0], 8, 1, dr);
    __rnd_seed[0] = seed ^ drs[0];
    __rnd_seed[1] = seed ^ drs[1];
@@ -200,6 +202,8 @@ x917_setseed (UINT32 seed, int quiet)
   }
  else if ( (dr = fopen(APG_DEVURANDOM, "r")) != NULL)
   {
+   // Avoid reading too many bytes from /dev/urandom.
+   setvbuf(dr, NULL, _IONBF, 0);
    (void)fread( (void *)&drs[0], 8, 1, dr);
    __rnd_seed[0] = seed ^ drs[0];
    __rnd_seed[1] = seed ^ drs[1];
